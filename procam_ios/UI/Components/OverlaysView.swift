@@ -14,16 +14,19 @@ public struct OverlaysView: View {
             // 1. Composition Grid
             if cameraManager.uiState.gridType != .none {
                 gridCanvas
+                    .allowsHitTesting(false)
             }
             
             // 2. Artificial Horizon / Tiltmeter Level (Center of Viewfinder)
             if cameraManager.uiState.isTiltMeterEnabled {
                 tiltMeterOverlay
+                    .allowsHitTesting(false)
             }
             
             // 3. Tap to Focus Reticle Ring + Sun AE Metering Icon
             if let focusPoint = cameraManager.focusReticlePoint {
                 focusReticleView(at: focusPoint)
+                    .allowsHitTesting(false)
             }
             
             // 4. Stereo Audio VU Meter (Left edge in Video Mode)
@@ -33,6 +36,7 @@ public struct OverlaysView: View {
                         .padding(.leading, 12)
                     Spacer()
                 }
+                .allowsHitTesting(false)
                 
                 // Video Recording Indicator Badge (Bottom Left)
                 if cameraManager.uiState.isRecordingVideo {
@@ -59,6 +63,7 @@ public struct OverlaysView: View {
                             Spacer()
                         }
                     }
+                    .allowsHitTesting(false)
                 }
             }
             
@@ -73,6 +78,7 @@ public struct OverlaysView: View {
                             .padding(.bottom, 12)
                     }
                 }
+                .allowsHitTesting(false)
             }
             
             // 6. ProCam Quick Zoom Preset Widget (Bottom-Center)

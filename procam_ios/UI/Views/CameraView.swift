@@ -23,16 +23,6 @@ public struct CameraView: View {
                             .aspectRatio(cameraManager.uiState.aspectRatio.multiplier, contentMode: .fit)
                             .frame(width: geo.size.width, height: geo.size.height)
                             .clipped()
-                            .contentShape(Rectangle())
-                            .gesture(
-                                DragGesture(minimumDistance: 0)
-                                    .onEnded { value in
-                                        let screenPoint = value.location
-                                        let deviceX = screenPoint.x / geo.size.width
-                                        let deviceY = screenPoint.y / geo.size.height
-                                        cameraManager.tapToFocus(at: CGPoint(x: deviceX, y: deviceY), screenPoint: screenPoint)
-                                    }
-                            )
                     }
                     
                     // Live Overlays (Grid, Tiltmeter, Reticle, Histogram, VU meter, REC badge, Zoom widget)
@@ -42,6 +32,7 @@ public struct CameraView: View {
                     if cameraManager.uiState.isShutterFlashing {
                         Color.white
                             .transition(.opacity)
+                            .allowsHitTesting(false)
                     }
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -61,9 +52,6 @@ public struct CameraView: View {
                     isExpanded: cameraManager.uiState.isModeDrawerExpanded
                 ) { mode in
                     cameraManager.setShootingMode(mode)
-                    withAnimation {
-                        cameraManager.uiState.isModeDrawerExpanded = false
-                    }
                 }
                 
                 // 6. Iconic Bottom Shutter & Controls Row
@@ -77,6 +65,12 @@ public struct CameraView: View {
                 }
                 .transition(.opacity)
             }
+        }
+        .onAppear {
+            cameraManager.startSession()
+        }
+        .onDisappear {
+            cameraManager.stopSession()
         }
         .preferredColorScheme(.dark)
         .statusBar(hidden: true)

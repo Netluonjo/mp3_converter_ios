@@ -56,6 +56,12 @@ public class CameraManager: NSObject, ObservableObject, AVCapturePhotoCaptureDel
     
     // MARK: - Permissions & Setup
     private func checkPermissions() {
+        #if targetEnvironment(simulator)
+        DispatchQueue.main.async {
+            self.uiState.isInitialized = true
+            self.uiState.maxZoomRatio = 10.0
+        }
+        #else
         switch AVCaptureDevice.authorizationStatus(for: .video) {
         case .authorized:
             setupSession()
@@ -63,10 +69,40 @@ public class CameraManager: NSObject, ObservableObject, AVCapturePhotoCaptureDel
             AVCaptureDevice.requestAccess(for: .video) { [weak self] granted in
                 if granted {
                     self?.setupSession()
+                } else {
+                    DispatchQueue.main.async {
+                        self?.uiState.isInitialized = true
+                    }
                 }
             }
         default:
             print("Camera access denied.")
+            DispatchQueue.main.async {
+                self.uiState.isInitialized = true
+            }
+        }
+        #endif
+    }
+    
+    public var isCameraAvailable: Bool {
+        return currentDevice != nil && session.isRunning
+    }
+    
+    public func startSession() {
+        sessionQueue.async { [weak self] in
+            guard let self = self else { return }
+            if !self.session.isRunning && self.currentDevice != nil {
+                self.session.startRunning()
+            }
+        }
+    }
+    
+    public func stopSession() {
+        sessionQueue.async { [weak self] in
+            guard let self = self else { return }
+            if self.session.isRunning {
+                self.session.stopRunning()
+            }
         }
     }
     
@@ -78,8 +114,12 @@ public class CameraManager: NSObject, ObservableObject, AVCapturePhotoCaptureDel
             
             // Default to Back Wide Camera
             guard let backCamera = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back) else {
-                print("Back camera unavailable")
+                print("Back camera unavailable (Simulator or restricted device)")
                 self.session.commitConfiguration()
+                DispatchQueue.main.async {
+                    self.uiState.isInitialized = true
+                    self.uiState.maxZoomRatio = 10.0
+                }
                 return
             }
             
@@ -92,19 +132,13 @@ public class CameraManager: NSObject, ObservableObject, AVCapturePhotoCaptureDel
                     self.videoDeviceInput = videoInput
                 }
                 
-                // Microphone Input for Video
-                if let micDevice = AVCaptureDevice.default(for: .audio),
-                   let audioInput = try? AVCaptureDeviceInput(device: micDevice),
-                   self.session.canAddInput(audioInput) {
-                    self.session.addInput(audioInput)
-                    self.audioDeviceInput = audioInput
-                }
-                
                 // Photo Output
                 if self.session.canAddOutput(self.photoOutput) {
                     self.session.addOutput(self.photoOutput)
                     if #available(iOS 16.0, *) {
-                        self.photoOutput.maxPhotoDimensions = backCamera.activeFormat.supportedMaxPhotoDimensions.last ?? CMVideoDimensions(width: 4032, height: 3024)
+                        if let maxDim = backCamera.activeFormat.supportedMaxPhotoDimensions.max(by: { $0.width * $0.height < $1.width * $1.height }) {
+                            self.photoOutput.maxPhotoDimensions = maxDim
+                        }
                     } else {
                         self.photoOutput.isHighResolutionCaptureEnabled = true
                     }
@@ -137,6 +171,9 @@ public class CameraManager: NSObject, ObservableObject, AVCapturePhotoCaptureDel
             } catch {
                 print("Failed to initialize camera session: \(error)")
                 self.session.commitConfiguration()
+                DispatchQueue.main.async {
+                    self.uiState.isInitialized = true
+                }
             }
         }
     }
@@ -161,6 +198,10 @@ public class CameraManager: NSObject, ObservableObject, AVCapturePhotoCaptureDel
     
     // MARK: - Manual Controls (ISO, Shutter, Focus, WB, EV, Zoom)
     public func setEv(_ ev: Float) {
+        uiState.currentEv = ev
+        uiState.isAutoIso = true
+        uiState.isAutoShutter = true
+        
         sessionQueue.async { [weak self] in
             guard let self = self, let device = self.currentDevice else { return }
             do {
@@ -168,12 +209,6 @@ public class CameraManager: NSObject, ObservableObject, AVCapturePhotoCaptureDel
                 let clampedBias = min(max(ev, device.minExposureTargetBias), device.maxExposureTargetBias)
                 device.setExposureTargetBias(clampedBias, completionHandler: nil)
                 device.unlockForConfiguration()
-                
-                DispatchQueue.main.async {
-                    self.uiState.currentEv = ev
-                    self.uiState.isAutoIso = true
-                    self.uiState.isAutoShutter = true
-                }
             } catch {
                 print("Error setting EV: \(error)")
             }
@@ -181,6 +216,9 @@ public class CameraManager: NSObject, ObservableObject, AVCapturePhotoCaptureDel
     }
     
     public func setIso(_ iso: Int, isAuto: Bool) {
+        uiState.isAutoIso = isAuto
+        if !isAuto { uiState.currentIso = iso }
+        
         sessionQueue.async { [weak self] in
             guard let self = self, let device = self.currentDevice else { return }
             do {
@@ -189,16 +227,11 @@ public class CameraManager: NSObject, ObservableObject, AVCapturePhotoCaptureDel
                     if device.isExposureModeSupported(.continuousAutoExposure) {
                         device.exposureMode = .continuousAutoExposure
                     }
-                } else {
+                } else if device.isExposureModeSupported(.custom) {
                     let clampedIso = min(max(Float(iso), device.activeFormat.minISO), device.activeFormat.maxISO)
-                    device.setExposureModeCustom(duration: device.exposureDuration, iso: clampedIso, completionHandler: nil)
+                    device.setExposureModeCustom(duration: AVCaptureDevice.currentExposureDuration, iso: clampedIso, completionHandler: nil)
                 }
                 device.unlockForConfiguration()
-                
-                DispatchQueue.main.async {
-                    self.uiState.isAutoIso = isAuto
-                    if !isAuto { self.uiState.currentIso = iso }
-                }
             } catch {
                 print("Error setting ISO: \(error)")
             }
@@ -206,6 +239,9 @@ public class CameraManager: NSObject, ObservableObject, AVCapturePhotoCaptureDel
     }
     
     public func setShutterDuration(_ seconds: Double, isAuto: Bool) {
+        uiState.isAutoShutter = isAuto
+        uiState.currentExposureDurationSeconds = seconds
+        
         sessionQueue.async { [weak self] in
             guard let self = self, let device = self.currentDevice else { return }
             do {
@@ -214,16 +250,14 @@ public class CameraManager: NSObject, ObservableObject, AVCapturePhotoCaptureDel
                     if device.isExposureModeSupported(.continuousAutoExposure) {
                         device.exposureMode = .continuousAutoExposure
                     }
-                } else {
-                    let durationTime = CMTime(seconds: seconds, preferredTimescale: 1000000)
-                    device.setExposureModeCustom(duration: durationTime, iso: device.iso, completionHandler: nil)
+                } else if device.isExposureModeSupported(.custom) {
+                    let minSec = CMTimeGetSeconds(device.activeFormat.minExposureDuration)
+                    let maxSec = CMTimeGetSeconds(device.activeFormat.maxExposureDuration)
+                    let clampedSeconds = min(max(seconds, minSec), maxSec)
+                    let durationTime = CMTime(seconds: clampedSeconds, preferredTimescale: 1000000)
+                    device.setExposureModeCustom(duration: durationTime, iso: AVCaptureDevice.currentISO, completionHandler: nil)
                 }
                 device.unlockForConfiguration()
-                
-                DispatchQueue.main.async {
-                    self.uiState.isAutoShutter = isAuto
-                    self.uiState.currentExposureDurationSeconds = seconds
-                }
             } catch {
                 print("Error setting Shutter speed: \(error)")
             }
@@ -231,6 +265,9 @@ public class CameraManager: NSObject, ObservableObject, AVCapturePhotoCaptureDel
     }
     
     public func setFocusPosition(_ position: Float, isAuto: Bool) {
+        uiState.isAutoFocus = isAuto
+        uiState.currentLensPosition = position
+        
         sessionQueue.async { [weak self] in
             guard let self = self, let device = self.currentDevice else { return }
             do {
@@ -240,16 +277,12 @@ public class CameraManager: NSObject, ObservableObject, AVCapturePhotoCaptureDel
                         device.focusMode = .continuousAutoFocus
                     }
                 } else {
-                    if device.isFocusModeSupported(.locked) {
-                        device.setFocusModeLocked(lensPosition: position, completionHandler: nil)
+                    if device.isLockingFocusWithCustomLensPositionSupported && device.isFocusModeSupported(.locked) {
+                        let clampedPos = min(max(position, 0.0), 1.0)
+                        device.setFocusModeLocked(lensPosition: clampedPos, completionHandler: nil)
                     }
                 }
                 device.unlockForConfiguration()
-                
-                DispatchQueue.main.async {
-                    self.uiState.isAutoFocus = isAuto
-                    self.uiState.currentLensPosition = position
-                }
             } catch {
                 print("Error setting Focus: \(error)")
             }
@@ -257,6 +290,9 @@ public class CameraManager: NSObject, ObservableObject, AVCapturePhotoCaptureDel
     }
     
     public func setKelvin(_ kelvin: Int, isAuto: Bool) {
+        uiState.isAutoWb = isAuto
+        uiState.currentKelvin = kelvin
+        
         sessionQueue.async { [weak self] in
             guard let self = self, let device = self.currentDevice else { return }
             do {
@@ -265,7 +301,7 @@ public class CameraManager: NSObject, ObservableObject, AVCapturePhotoCaptureDel
                     if device.isWhiteBalanceModeSupported(.continuousAutoWhiteBalance) {
                         device.whiteBalanceMode = .continuousAutoWhiteBalance
                     }
-                } else {
+                } else if device.isWhiteBalanceModeSupported(.locked) {
                     let tempAndTint = AVCaptureDevice.WhiteBalanceTemperatureAndTintValues(
                         temperature: Float(kelvin),
                         tint: 0.0
@@ -279,11 +315,6 @@ public class CameraManager: NSObject, ObservableObject, AVCapturePhotoCaptureDel
                     device.setWhiteBalanceModeLocked(with: gains, completionHandler: nil)
                 }
                 device.unlockForConfiguration()
-                
-                DispatchQueue.main.async {
-                    self.uiState.isAutoWb = isAuto
-                    self.uiState.currentKelvin = kelvin
-                }
             } catch {
                 print("Error setting White Balance: \(error)")
             }
@@ -291,17 +322,15 @@ public class CameraManager: NSObject, ObservableObject, AVCapturePhotoCaptureDel
     }
     
     public func setZoomRatio(_ ratio: CGFloat) {
+        let clamped = min(max(ratio, 1.0), self.uiState.maxZoomRatio)
+        self.uiState.currentZoomRatio = clamped
+        
         sessionQueue.async { [weak self] in
             guard let self = self, let device = self.currentDevice else { return }
             do {
                 try device.lockForConfiguration()
-                let clamped = min(max(ratio, 1.0), self.uiState.maxZoomRatio)
                 device.videoZoomFactor = clamped
                 device.unlockForConfiguration()
-                
-                DispatchQueue.main.async {
-                    self.uiState.currentZoomRatio = clamped
-                }
             } catch {
                 print("Error setting zoom: \(error)")
             }
@@ -420,25 +449,41 @@ public class CameraManager: NSObject, ObservableObject, AVCapturePhotoCaptureDel
             self.uiState.isShutterFlashing = false
         }
         
+        // Fallback for Simulator or when camera is not running
+        if currentDevice == nil || !session.isRunning {
+            let simImage = generateSimulatedPhoto()
+            DispatchQueue.main.async {
+                self.uiState.lastCapturedImage = simImage
+            }
+            return
+        }
+        
         sessionQueue.async { [weak self] in
             guard let self = self else { return }
             var photoSettings: AVCapturePhotoSettings
             
+            let defaultCodec: AVVideoCodecType = self.photoOutput.availablePhotoCodecTypes.contains(.hevc) ? .hevc : .jpeg
+            
             if self.uiState.isRawEnabled,
                let rawFormat = self.photoOutput.availableRawPhotoPixelFormatTypes.first(where: { AVCapturePhotoOutput.isAppleProRAWPixelFormat($0) || AVCapturePhotoOutput.isBayerRAWPixelFormat($0) }) {
-                photoSettings = AVCapturePhotoSettings(rawPixelFormatType: rawFormat, processedFormat: [AVVideoCodecKey: AVVideoCodecType.hevc])
+                photoSettings = AVCapturePhotoSettings(rawPixelFormatType: rawFormat, processedFormat: [AVVideoCodecKey: defaultCodec])
             } else {
-                photoSettings = AVCapturePhotoSettings(format: [AVVideoCodecKey: AVVideoCodecType.hevc])
+                photoSettings = AVCapturePhotoSettings(format: [AVVideoCodecKey: defaultCodec])
             }
             
             if !self.uiState.isRawEnabled && self.photoOutput.isStillImageStabilizationSupported {
                 photoSettings.isAutoStillImageStabilizationEnabled = true
             }
             
-            switch self.uiState.flashMode {
-            case .on: photoSettings.flashMode = .on
-            case .auto: photoSettings.flashMode = .auto
-            case .off, .torch: photoSettings.flashMode = .off
+            let targetFlash: AVCaptureDevice.FlashMode = {
+                switch self.uiState.flashMode {
+                case .on: return .on
+                case .auto: return .auto
+                case .off, .torch: return .off
+                }
+            }()
+            if self.photoOutput.supportedFlashModes.contains(targetFlash) {
+                photoSettings.flashMode = targetFlash
             }
             
             self.photoOutput.capturePhoto(with: photoSettings, delegate: self)
@@ -450,6 +495,10 @@ public class CameraManager: NSObject, ObservableObject, AVCapturePhotoCaptureDel
         guard error == nil, let data = photo.fileDataRepresentation(), let image = UIImage(data: data) else {
             print("Failed to process photo: \(String(describing: error))")
             return
+        }
+        
+        DispatchQueue.main.async {
+            self.uiState.lastCapturedImage = image
         }
         
         // Handle Slow Shutter computational stacking if mode is SLOW SHUTTER
@@ -465,9 +514,7 @@ public class CameraManager: NSObject, ObservableObject, AVCapturePhotoCaptureDel
                     request.addResource(with: .photo, data: data, options: nil)
                 } completionHandler: { success, _ in
                     if success {
-                        DispatchQueue.main.async {
-                            self.uiState.lastCapturedImage = image
-                        }
+                        print("Photo successfully saved to Photos library!")
                     }
                 }
             }
@@ -484,6 +531,17 @@ public class CameraManager: NSObject, ObservableObject, AVCapturePhotoCaptureDel
     }
     
     private func startVideoRecording() {
+        if currentDevice == nil || !session.isRunning {
+            DispatchQueue.main.async {
+                self.uiState.isRecordingVideo = true
+                self.uiState.videoRecordingSeconds = 0
+                self.recordingTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
+                    self?.uiState.videoRecordingSeconds += 1
+                }
+            }
+            return
+        }
+        
         sessionQueue.async { [weak self] in
             guard let self = self, !self.movieFileOutput.isRecording else { return }
             
@@ -505,6 +563,15 @@ public class CameraManager: NSObject, ObservableObject, AVCapturePhotoCaptureDel
     }
     
     private func stopVideoRecording() {
+        if currentDevice == nil || !session.isRunning {
+            DispatchQueue.main.async {
+                self.uiState.isRecordingVideo = false
+                self.recordingTimer?.invalidate()
+                self.recordingTimer = nil
+            }
+            return
+        }
+        
         sessionQueue.async { [weak self] in
             guard let self = self, self.movieFileOutput.isRecording else { return }
             self.movieFileOutput.stopRecording()
@@ -515,6 +582,25 @@ public class CameraManager: NSObject, ObservableObject, AVCapturePhotoCaptureDel
                 self.recordingTimer = nil
                 self.audioMeterManager.stopMonitoring()
             }
+        }
+    }
+    
+    private func generateSimulatedPhoto() -> UIImage {
+        let size = CGSize(width: 1920, height: 1080)
+        let renderer = UIGraphicsImageRenderer(size: size)
+        return renderer.image { ctx in
+            let colors = [UIColor(red: 0.08, green: 0.08, blue: 0.12, alpha: 1.0).cgColor,
+                          UIColor(red: 0.15, green: 0.18, blue: 0.25, alpha: 1.0).cgColor]
+            let gradient = CGGradient(colorsSpace: CGColorSpaceCreateDeviceRGB(), colors: colors as CFArray, locations: [0.0, 1.0])!
+            ctx.cgContext.drawLinearGradient(gradient, start: CGPoint.zero, end: CGPoint(x: size.width, y: size.height), options: [])
+            
+            let text = "PROCAM RAW CAPTURE"
+            let attrs: [NSAttributedString.Key: Any] = [
+                .font: UIFont.monospacedSystemFont(ofSize: 36, weight: .bold),
+                .foregroundColor: UIColor(red: 1.0, green: 0.72, blue: 0.0, alpha: 0.85)
+            ]
+            let textSize = text.size(withAttributes: attrs)
+            text.draw(at: CGPoint(x: (size.width - textSize.width) / 2, y: (size.height - textSize.height) / 2), withAttributes: attrs)
         }
     }
     

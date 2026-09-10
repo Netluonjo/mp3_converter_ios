@@ -332,7 +332,7 @@ public struct CameraUiState {
     public var isAeAfLocked: Bool = false
     public var isWbLocked: Bool = false
     public var timerSeconds: Int = 0 // 0: Off, 3: 3s, 10: 10s
-    public var isModeDrawerExpanded: Bool = false
+    public var isModeDrawerExpanded: Bool = true
     public var isSetMenuOpen: Bool = false
     public var batteryPercent: Int = 85
     public var freeStorageGb: String = "127.8"

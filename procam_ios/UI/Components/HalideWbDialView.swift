@@ -98,35 +98,52 @@ public struct HalideWbDialView: View {
                 .frame(width: 2.5, height: 36)
                 .cornerRadius(1)
                 .zIndex(3)
+                .allowsHitTesting(false)
             
-            // Graduated Kelvin Marks with Temperature Color Dots
-            HStack(spacing: 20) {
-                ForEach(0..<HALIDE_WB_VALUES.count, id: \.self) { idx in
-                    let stop = HALIDE_WB_VALUES[idx]
-                    let isCenter = idx == currentIndex
-                    let offset = abs(idx - currentIndex)
-                    let alpha = offset == 0 ? 1.0 : (offset == 1 ? 0.65 : (offset == 2 ? 0.35 : 0.15))
-                    
-                    VStack(spacing: 3) {
-                        Rectangle()
-                            .fill(isCenter ? ProCamColors.amber : Color.white.opacity(0.35))
-                            .frame(width: isCenter ? 2.5 : 1.2, height: isCenter ? 18 : 10)
-                            .cornerRadius(1)
-                        
-                        Text(stop.label)
-                            .font(.system(size: isCenter ? 11 : 9, weight: isCenter ? .black : .bold, design: .monospaced))
-                            .foregroundColor(isCenter ? ProCamColors.amber : Color.white.opacity(alpha))
-                        
-                        // Color Temperature dot
-                        Circle()
-                            .fill(stop.indicatorColor.opacity(alpha))
-                            .frame(width: isCenter ? 5 : 4, height: isCenter ? 5 : 4)
+            ScrollViewReader { proxy in
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 20) {
+                        ForEach(0..<HALIDE_WB_VALUES.count, id: \.self) { idx in
+                            let stop = HALIDE_WB_VALUES[idx]
+                            let isCenter = idx == currentIndex
+                            let offset = abs(idx - currentIndex)
+                            let alpha = offset == 0 ? 1.0 : (offset == 1 ? 0.65 : (offset == 2 ? 0.35 : 0.15))
+                            
+                            VStack(spacing: 3) {
+                                Rectangle()
+                                    .fill(isCenter ? ProCamColors.amber : Color.white.opacity(0.35))
+                                    .frame(width: isCenter ? 2.5 : 1.2, height: isCenter ? 18 : 10)
+                                    .cornerRadius(1)
+                                
+                                Text(stop.label)
+                                    .font(.system(size: isCenter ? 11 : 9, weight: isCenter ? .black : .bold, design: .monospaced))
+                                    .foregroundColor(isCenter ? ProCamColors.amber : Color.white.opacity(alpha))
+                                
+                                // Color Temperature dot
+                                Circle()
+                                    .fill(stop.indicatorColor.opacity(alpha))
+                                    .frame(width: isCenter ? 5 : 4, height: isCenter ? 5 : 4)
+                            }
+                            .frame(width: 44)
+                            .contentShape(Rectangle())
+                            .id(idx)
+                            .onTapGesture {
+                                feedback.impactOccurred()
+                                cameraManager.setKelvin(stop.isAuto ? 5500 : stop.kelvin, isAuto: stop.isAuto)
+                                withAnimation {
+                                    proxy.scrollTo(idx, anchor: .center)
+                                }
+                            }
+                        }
                     }
-                    .frame(width: 44)
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        feedback.impactOccurred()
-                        cameraManager.setKelvin(stop.isAuto ? 5500 : stop.kelvin, isAuto: stop.isAuto)
+                    .padding(.horizontal, 140)
+                }
+                .onAppear {
+                    proxy.scrollTo(currentIndex, anchor: .center)
+                }
+                .onChange(of: currentIndex) { newIdx in
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                        proxy.scrollTo(newIdx, anchor: .center)
                     }
                 }
             }

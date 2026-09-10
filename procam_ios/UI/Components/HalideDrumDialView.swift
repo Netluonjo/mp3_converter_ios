@@ -142,29 +142,47 @@ public struct HalideDrumDialView: View {
                 .frame(width: 2.5, height: 34)
                 .cornerRadius(1)
                 .zIndex(3)
+                .allowsHitTesting(false)
             
-            HStack(spacing: 16) {
-                ForEach(0..<HALIDE_EV_VALUES.count, id: \.self) { idx in
-                    let stop = HALIDE_EV_VALUES[idx]
-                    let isCenter = idx == currentIndex
-                    let offset = abs(idx - currentIndex)
-                    let alpha = offset == 0 ? 1.0 : (offset == 1 ? 0.70 : (offset == 2 ? 0.40 : 0.15))
-                    
-                    VStack(spacing: 3) {
-                        Rectangle()
-                            .fill(isCenter ? ProCamColors.halideGold : (stop.value.truncatingRemainder(dividingBy: 1.0) == 0 ? Color.white.opacity(0.8) : Color.white.opacity(0.35)))
-                            .frame(width: isCenter ? 2.5 : 1.5, height: isCenter ? 20 : (stop.value.truncatingRemainder(dividingBy: 1.0) == 0 ? 15 : 9))
-                            .cornerRadius(1)
-                        
-                        Text(stop.label)
-                            .font(.system(size: isCenter ? 12 : 10, weight: isCenter ? .black : .bold, design: .monospaced))
-                            .foregroundColor(isCenter ? (abs(stop.value) < 0.05 ? ProCamColors.green : ProCamColors.halideGold) : Color.white.opacity(alpha))
+            ScrollViewReader { proxy in
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 16) {
+                        ForEach(0..<HALIDE_EV_VALUES.count, id: \.self) { idx in
+                            let stop = HALIDE_EV_VALUES[idx]
+                            let isCenter = idx == currentIndex
+                            let offset = abs(idx - currentIndex)
+                            let alpha = offset == 0 ? 1.0 : (offset == 1 ? 0.70 : (offset == 2 ? 0.40 : 0.15))
+                            
+                            VStack(spacing: 3) {
+                                Rectangle()
+                                    .fill(isCenter ? ProCamColors.halideGold : (stop.value.truncatingRemainder(dividingBy: 1.0) == 0 ? Color.white.opacity(0.8) : Color.white.opacity(0.35)))
+                                    .frame(width: isCenter ? 2.5 : 1.5, height: isCenter ? 20 : (stop.value.truncatingRemainder(dividingBy: 1.0) == 0 ? 15 : 9))
+                                    .cornerRadius(1)
+                                
+                                Text(stop.label)
+                                    .font(.system(size: isCenter ? 12 : 10, weight: isCenter ? .black : .bold, design: .monospaced))
+                                    .foregroundColor(isCenter ? (abs(stop.value) < 0.05 ? ProCamColors.green : ProCamColors.halideGold) : Color.white.opacity(alpha))
+                            }
+                            .frame(width: 38)
+                            .contentShape(Rectangle())
+                            .id(idx)
+                            .onTapGesture {
+                                feedback.impactOccurred()
+                                cameraManager.setEv(stop.value)
+                                withAnimation {
+                                    proxy.scrollTo(idx, anchor: .center)
+                                }
+                            }
+                        }
                     }
-                    .frame(width: 38)
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        feedback.impactOccurred()
-                        cameraManager.setEv(stop.value)
+                    .padding(.horizontal, 140)
+                }
+                .onAppear {
+                    proxy.scrollTo(currentIndex, anchor: .center)
+                }
+                .onChange(of: currentIndex) { newIdx in
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                        proxy.scrollTo(newIdx, anchor: .center)
                     }
                 }
             }
@@ -213,33 +231,51 @@ public struct HalideDrumDialView: View {
                 .frame(width: 2.5, height: 34)
                 .cornerRadius(1)
                 .zIndex(3)
+                .allowsHitTesting(false)
             
-            HStack(spacing: 16) {
-                ForEach(0..<HALIDE_ISO_VALUES.count, id: \.self) { idx in
-                    let stop = HALIDE_ISO_VALUES[idx]
-                    let isCenter = idx == currentIndex
-                    let offset = abs(idx - currentIndex)
-                    let alpha = offset == 0 ? 1.0 : (offset == 1 ? 0.70 : (offset == 2 ? 0.40 : 0.15))
-                    
-                    VStack(spacing: 3) {
-                        Rectangle()
-                            .fill(isCenter ? ProCamColors.halideGold : (idx == 0 || [100, 200, 400, 800, 1600, 3200].contains(stop.value) ? Color.white.opacity(0.8) : Color.white.opacity(0.35)))
-                            .frame(width: isCenter ? 2.5 : 1.5, height: isCenter ? 20 : (idx == 0 || [100, 200, 400, 800, 1600, 3200].contains(stop.value) ? 15 : 9))
-                            .cornerRadius(1)
-                        
-                        Text(stop.label)
-                            .font(.system(size: isCenter ? 11 : 9, weight: isCenter ? .black : .bold, design: .monospaced))
-                            .foregroundColor(isCenter ? (stop.value == -1 ? ProCamColors.green : ProCamColors.halideGold) : Color.white.opacity(alpha))
-                    }
-                    .frame(width: 38)
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        feedback.impactOccurred()
-                        if stop.value == -1 {
-                            cameraManager.setIso(100, isAuto: true)
-                        } else {
-                            cameraManager.setIso(stop.value, isAuto: false)
+            ScrollViewReader { proxy in
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 16) {
+                        ForEach(0..<HALIDE_ISO_VALUES.count, id: \.self) { idx in
+                            let stop = HALIDE_ISO_VALUES[idx]
+                            let isCenter = idx == currentIndex
+                            let offset = abs(idx - currentIndex)
+                            let alpha = offset == 0 ? 1.0 : (offset == 1 ? 0.70 : (offset == 2 ? 0.40 : 0.15))
+                            
+                            VStack(spacing: 3) {
+                                Rectangle()
+                                    .fill(isCenter ? ProCamColors.halideGold : (idx == 0 || [100, 200, 400, 800, 1600, 3200].contains(stop.value) ? Color.white.opacity(0.8) : Color.white.opacity(0.35)))
+                                    .frame(width: isCenter ? 2.5 : 1.5, height: isCenter ? 20 : (idx == 0 || [100, 200, 400, 800, 1600, 3200].contains(stop.value) ? 15 : 9))
+                                    .cornerRadius(1)
+                                
+                                Text(stop.label)
+                                    .font(.system(size: isCenter ? 11 : 9, weight: isCenter ? .black : .bold, design: .monospaced))
+                                    .foregroundColor(isCenter ? (stop.value == -1 ? ProCamColors.green : ProCamColors.halideGold) : Color.white.opacity(alpha))
+                            }
+                            .frame(width: 38)
+                            .contentShape(Rectangle())
+                            .id(idx)
+                            .onTapGesture {
+                                feedback.impactOccurred()
+                                if stop.value == -1 {
+                                    cameraManager.setIso(100, isAuto: true)
+                                } else {
+                                    cameraManager.setIso(stop.value, isAuto: false)
+                                }
+                                withAnimation {
+                                    proxy.scrollTo(idx, anchor: .center)
+                                }
+                            }
                         }
+                    }
+                    .padding(.horizontal, 140)
+                }
+                .onAppear {
+                    proxy.scrollTo(currentIndex, anchor: .center)
+                }
+                .onChange(of: currentIndex) { newIdx in
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                        proxy.scrollTo(newIdx, anchor: .center)
                     }
                 }
             }

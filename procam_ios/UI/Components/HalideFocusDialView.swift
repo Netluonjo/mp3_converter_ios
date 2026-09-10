@@ -98,30 +98,47 @@ public struct HalideFocusDialView: View {
                 .frame(width: 2.5, height: 36)
                 .cornerRadius(1)
                 .zIndex(3)
+                .allowsHitTesting(false)
             
-            // Scrollable / Tappable Graduated Marks
-            HStack(spacing: 20) {
-                ForEach(0..<HALIDE_FOCUS_VALUES.count, id: \.self) { idx in
-                    let stop = HALIDE_FOCUS_VALUES[idx]
-                    let isCenter = idx == currentIndex
-                    let offset = abs(idx - currentIndex)
-                    let alpha = offset == 0 ? 1.0 : (offset == 1 ? 0.65 : (offset == 2 ? 0.35 : 0.15))
-                    
-                    VStack(spacing: 4) {
-                        Rectangle()
-                            .fill(isCenter ? ProCamColors.amber : Color.white.opacity(0.35))
-                            .frame(width: isCenter ? 2.5 : 1.2, height: isCenter ? 20 : 12)
-                            .cornerRadius(1)
-                        
-                        Text(stop.label)
-                            .font(.system(size: isCenter ? 12 : 10, weight: isCenter ? .black : .bold, design: .monospaced))
-                            .foregroundColor(isCenter ? ProCamColors.amber : Color.white.opacity(alpha))
+            ScrollViewReader { proxy in
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 20) {
+                        ForEach(0..<HALIDE_FOCUS_VALUES.count, id: \.self) { idx in
+                            let stop = HALIDE_FOCUS_VALUES[idx]
+                            let isCenter = idx == currentIndex
+                            let offset = abs(idx - currentIndex)
+                            let alpha = offset == 0 ? 1.0 : (offset == 1 ? 0.65 : (offset == 2 ? 0.35 : 0.15))
+                            
+                            VStack(spacing: 4) {
+                                Rectangle()
+                                    .fill(isCenter ? ProCamColors.amber : Color.white.opacity(0.35))
+                                    .frame(width: isCenter ? 2.5 : 1.2, height: isCenter ? 20 : 12)
+                                    .cornerRadius(1)
+                                
+                                Text(stop.label)
+                                    .font(.system(size: isCenter ? 12 : 10, weight: isCenter ? .black : .bold, design: .monospaced))
+                                    .foregroundColor(isCenter ? ProCamColors.amber : Color.white.opacity(alpha))
+                            }
+                            .frame(width: 44)
+                            .contentShape(Rectangle())
+                            .id(idx)
+                            .onTapGesture {
+                                feedback.impactOccurred()
+                                cameraManager.setFocusPosition(stop.lensPosition, isAuto: stop.isAuto)
+                                withAnimation {
+                                    proxy.scrollTo(idx, anchor: .center)
+                                }
+                            }
+                        }
                     }
-                    .frame(width: 44)
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        feedback.impactOccurred()
-                        cameraManager.setFocusPosition(stop.lensPosition, isAuto: stop.isAuto)
+                    .padding(.horizontal, 140)
+                }
+                .onAppear {
+                    proxy.scrollTo(currentIndex, anchor: .center)
+                }
+                .onChange(of: currentIndex) { newIdx in
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                        proxy.scrollTo(newIdx, anchor: .center)
                     }
                 }
             }
