@@ -4,6 +4,7 @@ import UIKit
 import Photos
 import AudioToolbox
 import Combine
+import CoreMedia
 
 public class CameraManager: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate, AVCaptureVideoDataOutputSampleBufferDelegate, AVCaptureFileOutputRecordingDelegate {
     
@@ -102,7 +103,11 @@ public class CameraManager: NSObject, ObservableObject, AVCapturePhotoCaptureDel
                 // Photo Output
                 if self.session.canAddOutput(self.photoOutput) {
                     self.session.addOutput(self.photoOutput)
-                    self.photoOutput.isHighResolutionCaptureEnabled = true
+                    if #available(iOS 16.0, *) {
+                        self.photoOutput.maxPhotoDimensions = backCamera.activeFormat.supportedMaxPhotoDimensions.last ?? CMVideoDimensions(width: 4032, height: 3024)
+                    } else {
+                        self.photoOutput.isHighResolutionCaptureEnabled = true
+                    }
                     if self.photoOutput.isAppleProRAWSupported {
                         self.photoOutput.isAppleProRAWEnabled = true
                     }
@@ -419,14 +424,14 @@ public class CameraManager: NSObject, ObservableObject, AVCapturePhotoCaptureDel
             guard let self = self else { return }
             var photoSettings: AVCapturePhotoSettings
             
-            if self.uiState.isRawEnabled && self.photoOutput.availableRawPhotoPixelFormatTypes.contains(where: { AVCapturePhotoOutput.isAppleProRAWPixelFormat($0) }) {
-                guard let rawFormat = self.photoOutput.availableRawPhotoPixelFormatTypes.first(where: { AVCapturePhotoOutput.isAppleProRAWPixelFormat($0) }) else { return }
-                photoSettings = AVCapturePhotoSettings(rawPhotoPixelFormatType: rawFormat, processedFormat: [AVVideoCodecKey: AVVideoCodecType.hevc])
+            if self.uiState.isRawEnabled,
+               let rawFormat = self.photoOutput.availableRawPhotoPixelFormatTypes.first(where: { AVCapturePhotoOutput.isAppleProRAWPixelFormat($0) || AVCapturePhotoOutput.isBayerRAWPixelFormat($0) }) {
+                photoSettings = AVCapturePhotoSettings(rawPixelFormatType: rawFormat, processedFormat: [AVVideoCodecKey: AVVideoCodecType.hevc])
             } else {
                 photoSettings = AVCapturePhotoSettings(format: [AVVideoCodecKey: AVVideoCodecType.hevc])
             }
             
-            if self.photoOutput.isStillImageStabilizationSupported {
+            if !self.uiState.isRawEnabled && self.photoOutput.isStillImageStabilizationSupported {
                 photoSettings.isAutoStillImageStabilizationEnabled = true
             }
             

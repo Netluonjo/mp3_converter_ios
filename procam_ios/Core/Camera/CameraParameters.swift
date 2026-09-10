@@ -286,6 +286,15 @@ public struct CameraUiState {
     public var currentZoomRatio: CGFloat = 1.0
     public var maxZoomRatio: CGFloat = 10.0
     
+    public var currentZoomFactor: CGFloat {
+        get { currentZoomRatio }
+        set { currentZoomRatio = newValue }
+    }
+    public var maxZoomFactor: CGFloat {
+        get { maxZoomRatio }
+        set { maxZoomRatio = newValue }
+    }
+    
     // Capture format & Top bar pills
     public var isRawEnabled: Bool = false
     public var isTiffEnabled: Bool = false
