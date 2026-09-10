@@ -1,0 +1,418 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		AA0000112C12345600000011 /* ProCamApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000102C12345600000010 /* ProCamApp.swift */; };
+		AA0000142C12345600000014 /* CameraParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000132C12345600000013 /* CameraParameters.swift */; };
+		AA0000162C12345600000016 /* CameraManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000152C12345600000015 /* CameraManager.swift */; };
+		AA0000182C12345600000018 /* MotionSensorManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000172C12345600000017 /* MotionSensorManager.swift */; };
+		AA00001A2C1234560000001A /* CameraPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000192C12345600000019 /* CameraPreviewView.swift */; };
+		AA00001C2C1234560000001C /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00001B2C1234560000001B /* CameraView.swift */; };
+		AA00001E2C1234560000001E /* HalideDrumDialView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00001D2C1234560000001D /* HalideDrumDialView.swift */; };
+		AA0000202C12345600000020 /* ManualParamBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00001F2C1234560000001F /* ManualParamBarView.swift */; };
+		AA0000222C12345600000022 /* CameraTopBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000212C12345600000021 /* CameraTopBarView.swift */; };
+		AA0000242C12345600000024 /* ShutterControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000232C12345600000023 /* ShutterControlView.swift */; };
+		AA0000262C12345600000026 /* OverlaysView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000252C12345600000025 /* OverlaysView.swift */; };
+		AA0000412C12345600000041 /* ProCamTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000402C12345600000040 /* ProCamTheme.swift */; };
+		AA0000432C12345600000043 /* AntiShakeDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000422C12345600000042 /* AntiShakeDetector.swift */; };
+		AA0000452C12345600000045 /* FrameStackingEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000442C12345600000044 /* FrameStackingEngine.swift */; };
+		AA0000472C12345600000047 /* AudioMeterManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000462C12345600000046 /* AudioMeterManager.swift */; };
+		AA0000492C12345600000049 /* LiveHistogramCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000482C12345600000048 /* LiveHistogramCalculator.swift */; };
+		AA00004B2C1234560000004B /* AudioVuMeterWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00004A2C1234560000004A /* AudioVuMeterWidget.swift */; };
+		AA00004D2C1234560000004D /* ZoomControlWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00004C2C1234560000004C /* ZoomControlWidget.swift */; };
+		AA00004F2C1234560000004F /* ProCamSettingsModalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00004E2C1234560000004E /* ProCamSettingsModalView.swift */; };
+		AA0000512C12345600000051 /* HalideFocusDialView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000502C12345600000050 /* HalideFocusDialView.swift */; };
+		AA0000532C12345600000053 /* HalideWbDialView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000522C12345600000052 /* HalideWbDialView.swift */; };
+		AA0000552C12345600000055 /* ProCamRulerDialView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000542C12345600000054 /* ProCamRulerDialView.swift */; };
+		AA0000572C12345600000057 /* LockControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000562C12345600000056 /* LockControlView.swift */; };
+		AA0000592C12345600000059 /* ModeSelectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000582C12345600000058 /* ModeSelectorView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		AA00000F2C1234560000000F /* procam_ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "procam_ios.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		AA0000102C12345600000010 /* ProCamApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProCamApp.swift; sourceTree = "<group>"; };
+		AA0000122C12345600000012 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		AA0000132C12345600000013 /* CameraParameters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraParameters.swift; sourceTree = "<group>"; };
+		AA0000152C12345600000015 /* CameraManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraManager.swift; sourceTree = "<group>"; };
+		AA0000172C12345600000017 /* MotionSensorManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotionSensorManager.swift; sourceTree = "<group>"; };
+		AA0000192C12345600000019 /* CameraPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPreviewView.swift; sourceTree = "<group>"; };
+		AA00001B2C1234560000001B /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
+		AA00001D2C1234560000001D /* HalideDrumDialView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HalideDrumDialView.swift; sourceTree = "<group>"; };
+		AA00001F2C1234560000001F /* ManualParamBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManualParamBarView.swift; sourceTree = "<group>"; };
+		AA0000212C12345600000021 /* CameraTopBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraTopBarView.swift; sourceTree = "<group>"; };
+		AA0000232C12345600000023 /* ShutterControlView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShutterControlView.swift; sourceTree = "<group>"; };
+		AA0000252C12345600000025 /* OverlaysView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlaysView.swift; sourceTree = "<group>"; };
+		AA0000402C12345600000040 /* ProCamTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProCamTheme.swift; sourceTree = "<group>"; };
+		AA0000422C12345600000042 /* AntiShakeDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AntiShakeDetector.swift; sourceTree = "<group>"; };
+		AA0000442C12345600000044 /* FrameStackingEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrameStackingEngine.swift; sourceTree = "<group>"; };
+		AA0000462C12345600000046 /* AudioMeterManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioMeterManager.swift; sourceTree = "<group>"; };
+		AA0000482C12345600000048 /* LiveHistogramCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveHistogramCalculator.swift; sourceTree = "<group>"; };
+		AA00004A2C1234560000004A /* AudioVuMeterWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioVuMeterWidget.swift; sourceTree = "<group>"; };
+		AA00004C2C1234560000004C /* ZoomControlWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomControlWidget.swift; sourceTree = "<group>"; };
+		AA00004E2C1234560000004E /* ProCamSettingsModalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProCamSettingsModalView.swift; sourceTree = "<group>"; };
+		AA0000502C12345600000050 /* HalideFocusDialView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HalideFocusDialView.swift; sourceTree = "<group>"; };
+		AA0000522C12345600000052 /* HalideWbDialView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HalideWbDialView.swift; sourceTree = "<group>"; };
+		AA0000542C12345600000054 /* ProCamRulerDialView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProCamRulerDialView.swift; sourceTree = "<group>"; };
+		AA0000562C12345600000056 /* LockControlView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LockControlView.swift; sourceTree = "<group>"; };
+		AA0000582C12345600000058 /* ModeSelectorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModeSelectorView.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		AA00000A2C1234560000000A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		AA00000C2C1234560000000C = {
+			isa = PBXGroup;
+			children = (
+				AA00000D2C1234560000000D /* procam_ios */,
+				AA00000E2C1234560000000E /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		AA00000D2C1234560000000D /* procam_ios */ = {
+			isa = PBXGroup;
+			children = (
+				AA0000102C12345600000010 /* ProCamApp.swift */,
+				AA0000122C12345600000012 /* Info.plist */,
+				AA0000302C12345600000030 /* Core */,
+				AA0000312C12345600000031 /* UI */,
+			);
+			path = procam_ios;
+			sourceTree = "<group>";
+		};
+		AA0000302C12345600000030 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				AA0000602C12345600000060 /* Camera */,
+				AA0000612C12345600000061 /* Sensors */,
+				AA0000622C12345600000062 /* Computational */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		AA0000602C12345600000060 /* Camera */ = {
+			isa = PBXGroup;
+			children = (
+				AA0000152C12345600000015 /* CameraManager.swift */,
+				AA0000132C12345600000013 /* CameraParameters.swift */,
+				AA0000482C12345600000048 /* LiveHistogramCalculator.swift */,
+			);
+			path = Camera;
+			sourceTree = "<group>";
+		};
+		AA0000612C12345600000061 /* Sensors */ = {
+			isa = PBXGroup;
+			children = (
+				AA0000422C12345600000042 /* AntiShakeDetector.swift */,
+				AA0000462C12345600000046 /* AudioMeterManager.swift */,
+				AA0000172C12345600000017 /* MotionSensorManager.swift */,
+			);
+			path = Sensors;
+			sourceTree = "<group>";
+		};
+		AA0000622C12345600000062 /* Computational */ = {
+			isa = PBXGroup;
+			children = (
+				AA0000442C12345600000044 /* FrameStackingEngine.swift */,
+			);
+			path = Computational;
+			sourceTree = "<group>";
+		};
+		AA0000312C12345600000031 /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				AA0000632C12345600000063 /* Theme */,
+				AA0000642C12345600000064 /* Views */,
+				AA0000652C12345600000065 /* Components */,
+			);
+			path = UI;
+			sourceTree = "<group>";
+		};
+		AA0000632C12345600000063 /* Theme */ = {
+			isa = PBXGroup;
+			children = (
+				AA0000402C12345600000040 /* ProCamTheme.swift */,
+			);
+			path = Theme;
+			sourceTree = "<group>";
+		};
+		AA0000642C12345600000064 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				AA0000192C12345600000019 /* CameraPreviewView.swift */,
+				AA00001B2C1234560000001B /* CameraView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		AA0000652C12345600000065 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				AA00004A2C1234560000004A /* AudioVuMeterWidget.swift */,
+				AA0000212C12345600000021 /* CameraTopBarView.swift */,
+				AA00001D2C1234560000001D /* HalideDrumDialView.swift */,
+				AA0000502C12345600000050 /* HalideFocusDialView.swift */,
+				AA0000522C12345600000052 /* HalideWbDialView.swift */,
+				AA0000562C12345600000056 /* LockControlView.swift */,
+				AA00001F2C1234560000001F /* ManualParamBarView.swift */,
+				AA0000582C12345600000058 /* ModeSelectorView.swift */,
+				AA0000252C12345600000025 /* OverlaysView.swift */,
+				AA0000542C12345600000054 /* ProCamRulerDialView.swift */,
+				AA00004E2C1234560000004E /* ProCamSettingsModalView.swift */,
+				AA0000232C12345600000023 /* ShutterControlView.swift */,
+				AA00004C2C1234560000004C /* ZoomControlWidget.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		AA00000E2C1234560000000E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				AA00000F2C1234560000000F /* procam_ios.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		AA0000022C12345600000002 /* procam_ios */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AA0000042C12345600000004 /* Build configuration list for PBXNativeTarget "procam_ios" */;
+			buildPhases = (
+				AA0000092C12345600000009 /* Sources */,
+				AA00000A2C1234560000000A /* Frameworks */,
+				AA00000B2C1234560000000B /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = procam_ios;
+			productName = procam_ios;
+			productReference = AA00000F2C1234560000000F /* procam_ios.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		AA0000012C12345600000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					AA0000022C12345600000002 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+				};
+			};
+			buildConfigurationList = AA0000032C12345600000003 /* Build configuration list for PBXProject "procam_ios" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = AA00000C2C1234560000000C;
+			productRefGroup = AA00000E2C1234560000000E /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				AA0000022C12345600000002 /* procam_ios */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		AA00000B2C1234560000000B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		AA0000092C12345600000009 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AA0000112C12345600000011 /* ProCamApp.swift in Sources */,
+				AA0000142C12345600000014 /* CameraParameters.swift in Sources */,
+				AA0000162C12345600000016 /* CameraManager.swift in Sources */,
+				AA0000182C12345600000018 /* MotionSensorManager.swift in Sources */,
+				AA00001A2C1234560000001A /* CameraPreviewView.swift in Sources */,
+				AA00001C2C1234560000001C /* CameraView.swift in Sources */,
+				AA00001E2C1234560000001E /* HalideDrumDialView.swift in Sources */,
+				AA0000202C12345600000020 /* ManualParamBarView.swift in Sources */,
+				AA0000222C12345600000022 /* CameraTopBarView.swift in Sources */,
+				AA0000242C12345600000024 /* ShutterControlView.swift in Sources */,
+				AA0000262C12345600000026 /* OverlaysView.swift in Sources */,
+				AA0000412C12345600000041 /* ProCamTheme.swift in Sources */,
+				AA0000432C12345600000043 /* AntiShakeDetector.swift in Sources */,
+				AA0000452C12345600000045 /* FrameStackingEngine.swift in Sources */,
+				AA0000472C12345600000047 /* AudioMeterManager.swift in Sources */,
+				AA0000492C12345600000049 /* LiveHistogramCalculator.swift in Sources */,
+				AA00004B2C1234560000004B /* AudioVuMeterWidget.swift in Sources */,
+				AA00004D2C1234560000004D /* ZoomControlWidget.swift in Sources */,
+				AA00004F2C1234560000004F /* ProCamSettingsModalView.swift in Sources */,
+				AA0000512C12345600000051 /* HalideFocusDialView.swift in Sources */,
+				AA0000532C12345600000053 /* HalideWbDialView.swift in Sources */,
+				AA0000552C12345600000055 /* ProCamRulerDialView.swift in Sources */,
+				AA0000572C12345600000057 /* LockControlView.swift in Sources */,
+				AA0000592C12345600000059 /* ModeSelectorView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		AA0000052C12345600000005 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		AA0000062C12345600000006 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_OPTIMIZATION_LEVEL = s;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		AA0000072C12345600000007 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = procam_ios/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = ProCam;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sondeptrai.procam;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		AA0000082C12345600000008 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = procam_ios/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = ProCam;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sondeptrai.procam;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		AA0000032C12345600000003 /* Build configuration list for PBXProject "procam_ios" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AA0000052C12345600000005 /* Debug */,
+				AA0000062C12345600000006 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AA0000042C12345600000004 /* Build configuration list for PBXNativeTarget "procam_ios" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AA0000072C12345600000007 /* Debug */,
+				AA0000082C12345600000008 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+	};
+	rootObject = AA0000012C12345600000001 /* Project object */;
+}
