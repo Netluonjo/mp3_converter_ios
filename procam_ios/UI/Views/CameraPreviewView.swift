@@ -15,7 +15,7 @@ public struct CameraPreviewView: View {
             #if targetEnvironment(simulator)
             SimulatedCameraViewfinder(cameraManager: cameraManager)
             #else
-            if cameraManager.currentDevice == nil {
+            if !cameraManager.isCameraAvailable {
                 SimulatedCameraViewfinder(cameraManager: cameraManager)
             }
             #endif

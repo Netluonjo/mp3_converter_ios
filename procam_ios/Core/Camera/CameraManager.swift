@@ -21,7 +21,7 @@ public class CameraManager: NSObject, ObservableObject, AVCapturePhotoCaptureDel
     
     // MARK: - Private Capture Properties
     private let sessionQueue = DispatchQueue(label: "com.sondeptrai.procam.sessionQueue")
-    private var currentDevice: AVCaptureDevice?
+    public private(set) var currentDevice: AVCaptureDevice?
     private var photoOutput = AVCapturePhotoOutput()
     private var movieFileOutput = AVCaptureMovieFileOutput()
     private var videoDataOutput = AVCaptureVideoDataOutput()
