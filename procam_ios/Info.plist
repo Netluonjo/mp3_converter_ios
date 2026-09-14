@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
@@ -27,9 +27,13 @@
 	<key>NSMicrophoneUsageDescription</key>
 	<string>ProCam requires access to your microphone to record high-fidelity audio during video capture.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>ProCam needs access to your Photos library to display thumbnails and organize captured RAW shots.</string>
+	<string>Ứng dụng cần truy cập thư viện Ảnh để trích xuất âm thanh từ video và lưu tệp đã xuất.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>ProCam saves pristine high-resolution photos and Apple ProRAW files directly into your Photo Library.</string>
+	<string>Ứng dụng lưu ảnh và tệp âm thanh trực tiếp vào thư viện của bạn.</string>
+	<key>UIFileSharingEnabled</key>
+	<true/>
+	<key>LSSupportsOpeningDocumentsInPlace</key>
+	<true/>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
