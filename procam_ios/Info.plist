@@ -5,11 +5,11 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>ProCam</string>
+	<string>MP3 Converter</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.sondeptrai.procam</string>
+	<string>com.sondeptrai.mp3converter</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -22,10 +22,8 @@
 	<string>1</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-	<key>NSCameraUsageDescription</key>
-	<string>ProCam requires access to your camera to take manual photos, RAW capture, and granular exposure adjustments.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>ProCam requires access to your microphone to record high-fidelity audio during video capture.</string>
+	<string>Ứng dụng cần micro để ghi âm và chỉnh sửa âm thanh trực tiếp.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Ứng dụng cần truy cập thư viện Ảnh để trích xuất âm thanh từ video và lưu tệp đã xuất.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>

@@ -6,11 +6,8 @@ public struct AudioEditorMainView: View {
     @StateObject private var playerManager = AudioPlayerManager()
     
     @State private var selectedTab: Int = 0
-    public var onSwitchToProCam: (() -> Void)?
     
-    public init(onSwitchToProCam: (() -> Void)? = nil) {
-        self.onSwitchToProCam = onSwitchToProCam
-    }
+    public init() {}
     
     public var body: some View {
         TabView(selection: $selectedTab) {
@@ -19,11 +16,7 @@ public struct AudioEditorMainView: View {
                 playerManager: playerManager,
                 fileManager: fileManager,
                 onBack: {
-                    if onSwitchToProCam != nil {
-                        onSwitchToProCam?()
-                    } else {
-                        selectedTab = 1
-                    }
+                    selectedTab = 1
                 }
             )
             .tabItem {
@@ -74,33 +67,9 @@ public struct AudioEditorMainView: View {
 
 /// Settings and Technical Compliance Screen
 struct AudioSettingsView: View {
-    public var onSwitchToProCam: (() -> Void)?
-    
     var body: some View {
         NavigationStack {
             List {
-                if let onSwitch = onSwitchToProCam {
-                    Section(header: Text("CHUYỂN ĐỔI ỨNG DỤNG")) {
-                        Button(action: onSwitch) {
-                            HStack {
-                                Image(systemName: "camera.aperture")
-                                    .foregroundColor(Color.orange)
-                                    .frame(width: 28)
-                                VStack(alignment: .leading) {
-                                    Text("Mở ProCam - Manual Camera")
-                                        .font(.system(size: 15, weight: .semibold))
-                                    Text("Chuyển sang chế độ máy ảnh chuyên nghiệp")
-                                        .font(.system(size: 12))
-                                        .foregroundColor(.secondary)
-                                }
-                                Spacer()
-                                Image(systemName: "arrow.right.circle.fill")
-                                    .foregroundColor(.orange)
-                            }
-                        }
-                    }
-                }
-                
                 Section(header: Text("BẢN QUYỀN & GIẤY PHÉP PHẦN MỀM")) {
                     VStack(alignment: .leading, spacing: 6) {
                         Text("Giấy phép FFmpeg (LGPL v2.1+)")

@@ -1,10 +1,10 @@
 import SwiftUI
 
 @main
-struct ProCamApp: App {
+struct MP3ConverterApp: App {
     var body: some Scene {
         WindowGroup {
-            AppRootView()
+            AudioEditorMainView()
         }
     }
 }

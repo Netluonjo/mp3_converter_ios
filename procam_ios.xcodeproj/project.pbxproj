@@ -8,30 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		AA0000112C12345600000011 /* ProCamApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000102C12345600000010 /* ProCamApp.swift */; };
-		AA0000142C12345600000014 /* CameraParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000132C12345600000013 /* CameraParameters.swift */; };
-		AA0000162C12345600000016 /* CameraManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000152C12345600000015 /* CameraManager.swift */; };
-		AA0000182C12345600000018 /* MotionSensorManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000172C12345600000017 /* MotionSensorManager.swift */; };
-		AA00001A2C1234560000001A /* CameraPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000192C12345600000019 /* CameraPreviewView.swift */; };
-		AA00001C2C1234560000001C /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00001B2C1234560000001B /* CameraView.swift */; };
-		AA00001E2C1234560000001E /* HalideDrumDialView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00001D2C1234560000001D /* HalideDrumDialView.swift */; };
-		AA0000202C12345600000020 /* ManualParamBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00001F2C1234560000001F /* ManualParamBarView.swift */; };
-		AA0000222C12345600000022 /* CameraTopBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000212C12345600000021 /* CameraTopBarView.swift */; };
-		AA0000242C12345600000024 /* ShutterControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000232C12345600000023 /* ShutterControlView.swift */; };
-		AA0000262C12345600000026 /* OverlaysView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000252C12345600000025 /* OverlaysView.swift */; };
-		AA0000412C12345600000041 /* ProCamTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000402C12345600000040 /* ProCamTheme.swift */; };
-		AA0000432C12345600000043 /* AntiShakeDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000422C12345600000042 /* AntiShakeDetector.swift */; };
-		AA0000452C12345600000045 /* FrameStackingEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000442C12345600000044 /* FrameStackingEngine.swift */; };
-		AA0000472C12345600000047 /* AudioMeterManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000462C12345600000046 /* AudioMeterManager.swift */; };
-		AA0000492C12345600000049 /* LiveHistogramCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000482C12345600000048 /* LiveHistogramCalculator.swift */; };
-		AA00004B2C1234560000004B /* AudioVuMeterWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00004A2C1234560000004A /* AudioVuMeterWidget.swift */; };
-		AA00004D2C1234560000004D /* ZoomControlWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00004C2C1234560000004C /* ZoomControlWidget.swift */; };
-		AA00004F2C1234560000004F /* ProCamSettingsModalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00004E2C1234560000004E /* ProCamSettingsModalView.swift */; };
-		AA0000512C12345600000051 /* HalideFocusDialView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000502C12345600000050 /* HalideFocusDialView.swift */; };
-		AA0000532C12345600000053 /* HalideWbDialView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000522C12345600000052 /* HalideWbDialView.swift */; };
-		AA0000552C12345600000055 /* ProCamRulerDialView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000542C12345600000054 /* ProCamRulerDialView.swift */; };
-		AA0000572C12345600000057 /* LockControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000562C12345600000056 /* LockControlView.swift */; };
-		AA0000592C12345600000059 /* ModeSelectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000582C12345600000058 /* ModeSelectorView.swift */; };
-		AA0002012C12345600000201 /* AppRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001012C12345600000101 /* AppRootView.swift */; };
+
 		AA0002022C12345600000202 /* AudioTrack.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001022C12345600000102 /* AudioTrack.swift */; };
 		AA0002032C12345600000203 /* AudioExportConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001032C12345600000103 /* AudioExportConfig.swift */; };
 		AA0002042C12345600000204 /* AudioToolType.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001042C12345600000104 /* AudioToolType.swift */; };
@@ -60,30 +37,7 @@
 		AA00000F2C1234560000000F /* procam_ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "procam_ios.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA0000102C12345600000010 /* ProCamApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProCamApp.swift; sourceTree = "<group>"; };
 		AA0000122C12345600000012 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		AA0000132C12345600000013 /* CameraParameters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraParameters.swift; sourceTree = "<group>"; };
-		AA0000152C12345600000015 /* CameraManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraManager.swift; sourceTree = "<group>"; };
-		AA0000172C12345600000017 /* MotionSensorManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotionSensorManager.swift; sourceTree = "<group>"; };
-		AA0000192C12345600000019 /* CameraPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPreviewView.swift; sourceTree = "<group>"; };
-		AA00001B2C1234560000001B /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
-		AA00001D2C1234560000001D /* HalideDrumDialView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HalideDrumDialView.swift; sourceTree = "<group>"; };
-		AA00001F2C1234560000001F /* ManualParamBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManualParamBarView.swift; sourceTree = "<group>"; };
-		AA0000212C12345600000021 /* CameraTopBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraTopBarView.swift; sourceTree = "<group>"; };
-		AA0000232C12345600000023 /* ShutterControlView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShutterControlView.swift; sourceTree = "<group>"; };
-		AA0000252C12345600000025 /* OverlaysView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlaysView.swift; sourceTree = "<group>"; };
-		AA0000402C12345600000040 /* ProCamTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProCamTheme.swift; sourceTree = "<group>"; };
-		AA0000422C12345600000042 /* AntiShakeDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AntiShakeDetector.swift; sourceTree = "<group>"; };
-		AA0000442C12345600000044 /* FrameStackingEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrameStackingEngine.swift; sourceTree = "<group>"; };
-		AA0000462C12345600000046 /* AudioMeterManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioMeterManager.swift; sourceTree = "<group>"; };
-		AA0000482C12345600000048 /* LiveHistogramCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveHistogramCalculator.swift; sourceTree = "<group>"; };
-		AA00004A2C1234560000004A /* AudioVuMeterWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioVuMeterWidget.swift; sourceTree = "<group>"; };
-		AA00004C2C1234560000004C /* ZoomControlWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomControlWidget.swift; sourceTree = "<group>"; };
-		AA00004E2C1234560000004E /* ProCamSettingsModalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProCamSettingsModalView.swift; sourceTree = "<group>"; };
-		AA0000502C12345600000050 /* HalideFocusDialView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HalideFocusDialView.swift; sourceTree = "<group>"; };
-		AA0000522C12345600000052 /* HalideWbDialView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HalideWbDialView.swift; sourceTree = "<group>"; };
-		AA0000542C12345600000054 /* ProCamRulerDialView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProCamRulerDialView.swift; sourceTree = "<group>"; };
-		AA0000562C12345600000056 /* LockControlView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LockControlView.swift; sourceTree = "<group>"; };
-		AA0000582C12345600000058 /* ModeSelectorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModeSelectorView.swift; sourceTree = "<group>"; };
-		AA0001012C12345600000101 /* AppRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRootView.swift; sourceTree = "<group>"; };
+
 		AA0001022C12345600000102 /* AudioTrack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioTrack.swift; sourceTree = "<group>"; };
 		AA0001032C12345600000103 /* AudioExportConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioExportConfig.swift; sourceTree = "<group>"; };
 		AA0001042C12345600000104 /* AudioToolType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioToolType.swift; sourceTree = "<group>"; };
@@ -265,43 +219,7 @@
 			path = UI;
 			sourceTree = "<group>";
 		};
-		AA0000632C12345600000063 /* Theme */ = {
-			isa = PBXGroup;
-			children = (
-				AA0000402C12345600000040 /* ProCamTheme.swift */,
-			);
-			path = Theme;
-			sourceTree = "<group>";
-		};
-		AA0000642C12345600000064 /* Views */ = {
-			isa = PBXGroup;
-			children = (
-				AA0000192C12345600000019 /* CameraPreviewView.swift */,
-				AA00001B2C1234560000001B /* CameraView.swift */,
-			);
-			path = Views;
-			sourceTree = "<group>";
-		};
-		AA0000652C12345600000065 /* Components */ = {
-			isa = PBXGroup;
-			children = (
-				AA00004A2C1234560000004A /* AudioVuMeterWidget.swift */,
-				AA0000212C12345600000021 /* CameraTopBarView.swift */,
-				AA00001D2C1234560000001D /* HalideDrumDialView.swift */,
-				AA0000502C12345600000050 /* HalideFocusDialView.swift */,
-				AA0000522C12345600000052 /* HalideWbDialView.swift */,
-				AA0000562C12345600000056 /* LockControlView.swift */,
-				AA00001F2C1234560000001F /* ManualParamBarView.swift */,
-				AA0000582C12345600000058 /* ModeSelectorView.swift */,
-				AA0000252C12345600000025 /* OverlaysView.swift */,
-				AA0000542C12345600000054 /* ProCamRulerDialView.swift */,
-				AA00004E2C1234560000004E /* ProCamSettingsModalView.swift */,
-				AA0000232C12345600000023 /* ShutterControlView.swift */,
-				AA00004C2C1234560000004C /* ZoomControlWidget.swift */,
-			);
-			path = Components;
-			sourceTree = "<group>";
-		};
+
 		AA00000E2C1234560000000E /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -379,30 +297,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AA0000112C12345600000011 /* ProCamApp.swift in Sources */,
-				AA0000142C12345600000014 /* CameraParameters.swift in Sources */,
-				AA0000162C12345600000016 /* CameraManager.swift in Sources */,
-				AA0000182C12345600000018 /* MotionSensorManager.swift in Sources */,
-				AA00001A2C1234560000001A /* CameraPreviewView.swift in Sources */,
-				AA00001C2C1234560000001C /* CameraView.swift in Sources */,
-				AA00001E2C1234560000001E /* HalideDrumDialView.swift in Sources */,
-				AA0000202C12345600000020 /* ManualParamBarView.swift in Sources */,
-				AA0000222C12345600000022 /* CameraTopBarView.swift in Sources */,
-				AA0000242C12345600000024 /* ShutterControlView.swift in Sources */,
-				AA0000262C12345600000026 /* OverlaysView.swift in Sources */,
-				AA0000412C12345600000041 /* ProCamTheme.swift in Sources */,
-				AA0000432C12345600000043 /* AntiShakeDetector.swift in Sources */,
-				AA0000452C12345600000045 /* FrameStackingEngine.swift in Sources */,
-				AA0000472C12345600000047 /* AudioMeterManager.swift in Sources */,
-				AA0000492C12345600000049 /* LiveHistogramCalculator.swift in Sources */,
-				AA00004B2C1234560000004B /* AudioVuMeterWidget.swift in Sources */,
-				AA00004D2C1234560000004D /* ZoomControlWidget.swift in Sources */,
-				AA00004F2C1234560000004F /* ProCamSettingsModalView.swift in Sources */,
-				AA0000512C12345600000051 /* HalideFocusDialView.swift in Sources */,
-				AA0000532C12345600000053 /* HalideWbDialView.swift in Sources */,
-				AA0000552C12345600000055 /* ProCamRulerDialView.swift in Sources */,
-				AA0000572C12345600000057 /* LockControlView.swift in Sources */,
-				AA0000592C12345600000059 /* ModeSelectorView.swift in Sources */,
-				AA0002012C12345600000201 /* AppRootView.swift in Sources */,
+
 				AA0002022C12345600000202 /* AudioTrack.swift in Sources */,
 				AA0002032C12345600000203 /* AudioExportConfig.swift in Sources */,
 				AA0002042C12345600000204 /* AudioToolType.swift in Sources */,
