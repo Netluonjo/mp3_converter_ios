@@ -48,7 +48,7 @@ public struct AudioEditorMainView: View {
             .tag(2)
             
             // Tab 4: Settings & Guidelines
-            AudioSettingsView(onSwitchToProCam: onSwitchToProCam)
+            AudioSettingsView()
                 .tabItem {
                     Label("Cài đặt", systemImage: "gearshape.fill")
                 }
