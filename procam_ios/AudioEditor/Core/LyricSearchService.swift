@@ -54,32 +54,53 @@ public final class LyricSearchService: ObservableObject {
         self.errorMessage = nil
         self.hasAttemptedSearch = true
         
-        // Tier 1: Clean query by stripping file extensions and tags like (Official MV), [Lyrics]
+        // Tier 0: Clean query by stripping file extensions, quotes, and prefixes ("bài hát ", "lời bài hát ")
         let cleaned = cleanQueryString(trimmed)
-        var results = await executeNetworkSearch(query: cleaned)
         
-        // Tier 2: If no results and query contains "-", search individual segments (e.g. "Son Tung - Chay Ngay Di")
-        if results.isEmpty && cleaned.contains("-") {
+        // Tier 1: Check instant offline catalog (0ms latency, works offline)
+        let offlineMatches = OfflineLyricsStore.search(query: cleaned)
+        if !offlineMatches.isEmpty {
+            self.searchResults = offlineMatches
+        }
+        
+        // Tier 2: Search online network database
+        var networkResults = await executeNetworkSearch(query: cleaned)
+        
+        // Tier 3: If no network results and query contains "-", search individual segments
+        if networkResults.isEmpty && cleaned.contains("-") {
             let parts = cleaned.components(separatedBy: "-")
             for part in parts {
                 let partClean = part.trimmingCharacters(in: .whitespacesAndNewlines)
                 if partClean.count >= 3 {
-                    results = await executeNetworkSearch(query: partClean)
-                    if !results.isEmpty { break }
+                    networkResults = await executeNetworkSearch(query: partClean)
+                    if !networkResults.isEmpty { break }
                 }
             }
         }
         
-        // Tier 3: If no results, try folding Vietnamese accents (diacritics insensitive)
-        if results.isEmpty {
+        // Tier 4: If still no network results, try folding Vietnamese accents
+        if networkResults.isEmpty {
             let folded = cleaned.folding(options: .diacriticInsensitive, locale: Locale(identifier: "vi-VN"))
             if folded != cleaned {
-                results = await executeNetworkSearch(query: folded)
+                networkResults = await executeNetworkSearch(query: folded)
+            }
+        }
+        
+        // Merge offline + online results without duplicates
+        var combined = offlineMatches
+        for netItem in networkResults {
+            let isDuplicate = combined.contains { existing in
+                let titleMatch = existing.trackName.caseInsensitiveCompare(netItem.trackName) == .orderedSame
+                let artistMatch = existing.artistName.caseInsensitiveCompare(netItem.artistName) == .orderedSame
+                return titleMatch && artistMatch
+            }
+            if !isDuplicate {
+                combined.append(netItem)
             }
         }
         
         // Prioritize results that have synced LRC timestamps
-        let sorted = results.sorted { lhs, rhs in
+        let sorted = combined.sorted { lhs, rhs in
             if lhs.hasSyncedLyrics != rhs.hasSyncedLyrics {
                 return lhs.hasSyncedLyrics && !rhs.hasSyncedLyrics
             }

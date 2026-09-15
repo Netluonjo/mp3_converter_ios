@@ -85,6 +85,14 @@ public struct AudioLyricsSyncedView: View {
         } message: {
             Text(aiAlertMessage ?? "")
         }
+        .onAppear {
+            if lyrics.isEmpty {
+                let lower = track.title.folding(options: .diacriticInsensitive, locale: Locale(identifier: "vi-VN")).lowercased()
+                if lower.contains("xuong rong") {
+                    onUpdateLyrics?(OfflineLyricsStore.xuongRongDangrangtoLRC)
+                }
+            }
+        }
     }
     
     // MARK: - Subviews
@@ -290,20 +298,43 @@ public struct AudioLyricsSyncedView: View {
                 
                 // Action Buttons Grid
                 VStack(spacing: 8) {
-                    // Button 1: Online search
-                    Button(action: { showSearchSheet = true }) {
+                    // Button: Instant 1-tap Apply for "Xương Rồng" (Dangrangto)
+                    Button(action: {
+                        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                        onUpdateLyrics?(OfflineLyricsStore.xuongRongDangrangtoLRC)
+                    }) {
                         HStack(spacing: 6) {
-                            Image(systemName: "globe.americas.fill")
-                            Text("Tìm lời bài hát Online (LRC)")
+                            Image(systemName: "music.note.list")
+                            Text("Áp dụng lời bài hát: Xương Rồng (Dangrangto)")
                         }
-                        .font(.system(size: 12, weight: .bold))
+                        .font(.system(size: 13, weight: .bold))
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
-                        .padding(.vertical, 8)
-                        .background(Capsule().fill(AudioEditorTheme.accentRed))
+                        .padding(.vertical, 10)
+                        .background(
+                            LinearGradient(
+                                colors: [AudioEditorTheme.accentRed, Color.orange],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                        .clipShape(Capsule())
                     }
                     
                     HStack(spacing: 8) {
+                        // Button 1: Online search
+                        Button(action: { showSearchSheet = true }) {
+                            HStack(spacing: 4) {
+                                Image(systemName: "globe.americas.fill")
+                                Text("Tìm online")
+                            }
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundColor(Color(UIColor.label))
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 7)
+                            .background(Capsule().fill(Color(UIColor.tertiarySystemBackground)))
+                        }
+                        
                         // Button 2: Speech Recognition
                         Button(action: startSpeechRecognition) {
                             HStack(spacing: 4) {
@@ -323,7 +354,7 @@ public struct AudioLyricsSyncedView: View {
                         }) {
                             HStack(spacing: 4) {
                                 Image(systemName: "sparkles")
-                                Text("Dùng lời mẫu")
+                                Text("Lời mẫu 21s")
                             }
                             .font(.system(size: 11, weight: .semibold))
                             .foregroundColor(Color(UIColor.label))
