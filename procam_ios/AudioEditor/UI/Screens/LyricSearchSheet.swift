@@ -9,9 +9,20 @@ public struct LyricSearchSheet: View {
     public let duration: TimeInterval
     public let onApplyLyrics: (String) -> Void
     
-    @State private var query: String
+    @State private var query: String = ""
     @State private var selectedResult: LyricSearchResult? = nil
-    @State private var showPreviewSheet: Bool = false
+    @State private var debounceTask: Task<Void, Never>? = nil
+    
+    // Popular quick search suggestion chips
+    private let popularSuggestions = [
+        "Chạy Ngay Đi",
+        "Nơi Này Có Anh",
+        "Nàng Thơ",
+        "Cắt Đôi Nỗi Sầu",
+        "Waiting For You",
+        "See You Again",
+        "Shape of You"
+    ]
     
     public init(
         initialQuery: String,
@@ -22,20 +33,27 @@ public struct LyricSearchSheet: View {
         self.duration = duration
         self.onApplyLyrics = onApplyLyrics
         
-        // Clean up common file tags like "Ghi âm 1.m4a" -> "Ghi âm 1"
         let clean = initialQuery
             .replacingOccurrences(of: "\\.[a-zA-Z0-9]{2,4}$", with: "", options: .regularExpression)
             .replacingOccurrences(of: "_", with: " ")
-        self._query = State(initialValue: clean)
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        // If the title is a generic recording name, don't pre-populate to avoid searching "Ghi âm 1"
+        let lower = clean.lowercased()
+        let isGeneric = lower.contains("ghi âm") || lower.contains("recording") || lower.contains("export") || lower.contains("audio") || lower.contains("track")
+        self._query = State(initialValue: isGeneric ? "" : clean)
     }
     
     public var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
-                // MARK: - Search Bar
-                searchBarView
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 12)
+                // MARK: - Search Bar & Suggestions
+                VStack(spacing: 10) {
+                    searchBarView
+                    suggestionChipsBar
+                }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 10)
                 
                 Divider()
                 
@@ -44,8 +62,10 @@ public struct LyricSearchSheet: View {
                     loadingView
                 } else if let error = searchService.errorMessage {
                     errorView(error)
+                } else if searchService.searchResults.isEmpty && searchService.hasAttemptedSearch && !query.isEmpty {
+                    noResultsView
                 } else if searchService.searchResults.isEmpty {
-                    emptyStateView
+                    initialPromptView
                 } else {
                     resultsListView
                 }
@@ -58,7 +78,7 @@ public struct LyricSearchSheet: View {
                 }
             }
             .task {
-                if !query.trimmingCharacters(in: .whitespaces).isEmpty && searchService.searchResults.isEmpty {
+                if !query.isEmpty && searchService.searchResults.isEmpty {
                     _ = await searchService.search(query: query)
                 }
             }
@@ -83,11 +103,18 @@ public struct LyricSearchSheet: View {
                     .textFieldStyle(.plain)
                     .autocorrectionDisabled()
                     .onSubmit {
-                        performSearch()
+                        performSearchImmediate()
+                    }
+                    .onChange(of: query) { newQuery in
+                        debounceSearch(newQuery)
                     }
                 
                 if !query.isEmpty {
-                    Button(action: { query = "" }) {
+                    Button(action: {
+                        query = ""
+                        searchService.searchResults = []
+                        searchService.hasAttemptedSearch = false
+                    }) {
                         Image(systemName: "xmark.circle.fill")
                             .foregroundColor(.secondary)
                     }
@@ -100,13 +127,37 @@ public struct LyricSearchSheet: View {
                     .fill(Color(UIColor.secondarySystemBackground))
             )
             
-            Button(action: performSearch) {
+            Button(action: performSearchImmediate) {
                 Text("Tìm")
                     .font(.system(size: 15, weight: .bold))
                     .foregroundColor(.white)
                     .padding(.horizontal, 16)
                     .padding(.vertical, 10)
                     .background(Capsule().fill(AudioEditorTheme.accentRed))
+            }
+        }
+    }
+    
+    private var suggestionChipsBar: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                Text("Gợi ý:")
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundColor(.secondary)
+                
+                ForEach(popularSuggestions, id: \.self) { title in
+                    Button(action: {
+                        query = title
+                        performSearchImmediate()
+                    }) {
+                        Text(title)
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundColor(AudioEditorTheme.accentRed)
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 5)
+                            .background(Capsule().fill(AudioEditorTheme.accentRed.opacity(0.12)))
+                    }
+                }
             }
         }
     }
@@ -119,7 +170,6 @@ public struct LyricSearchSheet: View {
                         selectedResult = item
                     }) {
                         HStack(spacing: 12) {
-                            // Icon indicating synced or plain
                             Image(systemName: item.hasSyncedLyrics ? "music.mic.circle.fill" : "text.quote")
                                 .font(.system(size: 28))
                                 .foregroundColor(item.hasSyncedLyrics ? AudioEditorTheme.accentRed : .secondary)
@@ -186,13 +236,68 @@ public struct LyricSearchSheet: View {
         }
     }
     
+    private var noResultsView: some View {
+        VStack(spacing: 14) {
+            Spacer()
+            Image(systemName: "magnifyingglass")
+                .font(.system(size: 46))
+                .foregroundColor(Color(UIColor.systemGray3))
+            
+            Text("Không tìm thấy kết quả")
+                .font(.system(size: 16, weight: .bold))
+            
+            Text("Không có lời bài hát nào khớp với từ khóa \"\(query)\".")
+                .font(.system(size: 13))
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 32)
+            
+            VStack(spacing: 8) {
+                Text("Mẹo tìm kiếm:")
+                    .font(.system(size: 12, weight: .bold))
+                    .foregroundColor(.secondary)
+                Text("• Chỉ gõ tên bài hát (bỏ bớt tên ca sĩ hoặc từ thừa)")
+                    .font(.system(size: 12))
+                    .foregroundColor(.secondary)
+                Text("• Thử gõ không dấu (ví dụ: 'chay ngay di' thay vì 'chạy ngay đi')")
+                    .font(.system(size: 12))
+                    .foregroundColor(.secondary)
+            }
+            .padding(12)
+            .background(RoundedRectangle(cornerRadius: 10).fill(Color(UIColor.secondarySystemBackground)))
+            .padding(.horizontal, 24)
+            
+            Spacer()
+        }
+    }
+    
+    private var initialPromptView: some View {
+        VStack(spacing: 14) {
+            Spacer()
+            Image(systemName: "music.note.magnifyingglass")
+                .font(.system(size: 50))
+                .foregroundColor(AudioEditorTheme.accentRed)
+            
+            Text("Tìm kiếm lời bài hát bất kỳ")
+                .font(.system(size: 16, weight: .bold))
+            
+            Text("Nhập tên bài hát hoặc ca sĩ vào thanh tìm kiếm phía trên để tải lời đồng bộ `.lrc` chuẩn xác từng giây.")
+                .font(.system(size: 13))
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 36)
+            
+            Spacer()
+        }
+    }
+    
     private var errorView: some View {
         VStack(spacing: 12) {
             Spacer()
-            Image(systemName: "exclamationmark.triangle")
+            Image(systemName: "wifi.exclamationmark")
                 .font(.system(size: 44))
                 .foregroundColor(.orange)
-            Text("Không thể tải kết quả")
+            Text("Không thể kết nối máy chủ")
                 .font(.system(size: 16, weight: .bold))
             Text(error)
                 .font(.system(size: 13))
@@ -200,61 +305,27 @@ public struct LyricSearchSheet: View {
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 32)
             
-            Button("Thử lại", action: performSearch)
+            Button("Thử lại", action: performSearchImmediate)
                 .padding(.top, 8)
             Spacer()
         }
     }
     
-    private var emptyStateView: some View {
-        VStack(spacing: 14) {
-            Spacer()
-            Image(systemName: "music.note.magnifyingglass")
-                .font(.system(size: 50))
-                .foregroundColor(Color(UIColor.systemGray3))
-            
-            Text("Nhập tên bài hát để tìm lời")
-                .font(.system(size: 16, weight: .bold))
-            
-            Text("Kho dữ liệu chứa hàng triệu lời bài hát chuẩn `.lrc` có mốc thời gian đồng bộ chuẩn xác với nhạc.")
-                .font(.system(size: 13))
-                .foregroundColor(.secondary)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, 40)
-            
-            // Suggested quick searches
-            VStack(spacing: 8) {
-                Text("Gợi ý tìm nhanh:")
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundColor(.secondary)
-                
-                HStack(spacing: 8) {
-                    suggestionPill("See You Again")
-                    suggestionPill("Hello")
-                    suggestionPill("Shape of You")
-                }
+    private func debounceSearch(_ newQuery: String) {
+        debounceTask?.cancel()
+        let trimmed = newQuery.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard trimmed.count >= 2 else { return }
+        
+        debounceTask = Task {
+            try? await Task.sleep(nanoseconds: 400_000_000) // 400ms debounce
+            if !Task.isCancelled {
+                _ = await searchService.search(query: trimmed)
             }
-            .padding(.top, 16)
-            
-            Spacer()
         }
     }
     
-    private func suggestionPill(_ title: String) -> some View {
-        Button(action: {
-            query = title
-            performSearch()
-        }) {
-            Text(title)
-                .font(.system(size: 12, weight: .medium))
-                .foregroundColor(AudioEditorTheme.accentRed)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 6)
-                .background(Capsule().fill(AudioEditorTheme.accentRed.opacity(0.12)))
-        }
-    }
-    
-    private func performSearch() {
+    private func performSearchImmediate() {
+        debounceTask?.cancel()
         UIImpactFeedbackGenerator(style: .light).impactOccurred()
         Task {
             _ = await searchService.search(query: query)
@@ -271,7 +342,6 @@ public struct LyricPreviewSheet: View {
     public var body: some View {
         NavigationStack {
             VStack(alignment: .leading, spacing: 14) {
-                // Header track summary
                 HStack(spacing: 12) {
                     Image(systemName: item.hasSyncedLyrics ? "waveform.badge.magnifyingglass" : "doc.text")
                         .font(.system(size: 28))
@@ -299,7 +369,6 @@ public struct LyricPreviewSheet: View {
                 .padding(14)
                 .background(RoundedRectangle(cornerRadius: 14).fill(Color(UIColor.secondarySystemBackground)))
                 
-                // Lyrics Scroll Preview
                 ScrollView {
                     Text(item.resolvedLyrics ?? "Không có nội dung lời bài hát.")
                         .font(.system(size: 14, design: .monospaced))
@@ -310,7 +379,6 @@ public struct LyricPreviewSheet: View {
                 }
                 .background(RoundedRectangle(cornerRadius: 14).fill(Color(UIColor.secondarySystemBackground)))
                 
-                // Apply Button
                 Button(action: {
                     if let lyrics = item.resolvedLyrics {
                         UIImpactFeedbackGenerator(style: .medium).impactOccurred()

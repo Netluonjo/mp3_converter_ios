@@ -98,7 +98,7 @@ public struct AudioToolsGridView: View {
                         duration: currentTrack.duration,
                         onApplyLyrics: { lrc in
                             let updated = fileManager.saveLyrics(for: currentTrack, lrcText: lrc)
-                            playerManager.loadTrack(updated)
+                            playerManager.updateTrackLyrics(updated)
                         }
                     )
                 case .ffmpegTerminal:

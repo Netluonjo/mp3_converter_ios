@@ -66,7 +66,7 @@ public struct AudioPlayerDetailView: View {
                     track: currentTrack,
                     onUpdateLyrics: { newLRC in
                         let updated = fileManager.saveLyrics(for: currentTrack, lrcText: newLRC)
-                        playerManager.loadTrack(updated)
+                        playerManager.updateTrackLyrics(updated)
                     }
                 )
                 .padding(.horizontal, 20)

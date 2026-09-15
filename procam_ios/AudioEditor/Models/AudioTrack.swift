@@ -86,8 +86,7 @@ public struct AudioTrack: Identifiable, Codable, Hashable {
     
     /// Sample demo recording matching the screenshot "Ghi âm 1"
     public static var demoTrack: AudioTrack {
-        let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        let demoUrl = docs.appendingPathComponent("Ghi âm 1.m4a")
+        let demoUrl = AudioFileManager.shared.exportsDirectory.appendingPathComponent("Ghi âm 1.m4a")
         return AudioTrack(
             title: "Ghi âm 1",
             fileURL: demoUrl,

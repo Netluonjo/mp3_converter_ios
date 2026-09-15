@@ -101,6 +101,11 @@ public final class AudioPlayerManager: NSObject, ObservableObject, AVAudioPlayer
         self.currentTime = 0.0
     }
     
+    /// Updates lyrics of the currently playing track without resetting playback position or stopping audio
+    public func updateTrackLyrics(_ updatedTrack: AudioTrack) {
+        self.currentTrack = updatedTrack
+    }
+    
     /// Toggles play / pause
     public func togglePlayPause() {
         if isPlaying {

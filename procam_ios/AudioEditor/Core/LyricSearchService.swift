@@ -29,7 +29,7 @@ public struct LyricSearchResult: Identifiable, Codable, Hashable {
     }
 }
 
-/// Service connecting to LRCLIB (open-source synced lyrics database)
+/// Service connecting to LRCLIB (open-source synced lyrics database) with smart fallbacks
 @MainActor
 public final class LyricSearchService: ObservableObject {
     public static let shared = LyricSearchService()
@@ -37,75 +37,102 @@ public final class LyricSearchService: ObservableObject {
     @Published public var isSearching: Bool = false
     @Published public var searchResults: [LyricSearchResult] = []
     @Published public var errorMessage: String? = nil
+    @Published public var hasAttemptedSearch: Bool = false
     
     private init() {}
     
-    /// Searches for synced lyrics matching user query (e.g. song title and/or artist)
+    /// Searches for synced lyrics with multi-tier smart fallback (clean query -> parts -> unaccented)
     public func search(query: String) async -> [LyricSearchResult] {
-        let cleanQuery = query.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !cleanQuery.isEmpty else {
+        let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else {
             self.searchResults = []
+            self.hasAttemptedSearch = false
             return []
         }
         
         self.isSearching = true
         self.errorMessage = nil
+        self.hasAttemptedSearch = true
         
-        guard let encodedQuery = cleanQuery.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
-              let url = URL(string: "https://lrclib.net/api/search?q=\(encodedQuery)") else {
-            self.isSearching = false
-            self.errorMessage = "URL không hợp lệ"
+        // Tier 1: Clean query by stripping file extensions and tags like (Official MV), [Lyrics]
+        let cleaned = cleanQueryString(trimmed)
+        var results = await executeNetworkSearch(query: cleaned)
+        
+        // Tier 2: If no results and query contains "-", search individual segments (e.g. "Son Tung - Chay Ngay Di")
+        if results.isEmpty && cleaned.contains("-") {
+            let parts = cleaned.components(separatedBy: "-")
+            for part in parts {
+                let partClean = part.trimmingCharacters(in: .whitespacesAndNewlines)
+                if partClean.count >= 3 {
+                    results = await executeNetworkSearch(query: partClean)
+                    if !results.isEmpty { break }
+                }
+            }
+        }
+        
+        // Tier 3: If no results, try folding Vietnamese accents (diacritics insensitive)
+        if results.isEmpty {
+            let folded = cleaned.folding(options: .diacriticInsensitive, locale: Locale(identifier: "vi-VN"))
+            if folded != cleaned {
+                results = await executeNetworkSearch(query: folded)
+            }
+        }
+        
+        // Prioritize results that have synced LRC timestamps
+        let sorted = results.sorted { lhs, rhs in
+            if lhs.hasSyncedLyrics != rhs.hasSyncedLyrics {
+                return lhs.hasSyncedLyrics && !rhs.hasSyncedLyrics
+            }
+            return false
+        }
+        
+        self.searchResults = sorted
+        self.isSearching = false
+        return sorted
+    }
+    
+    /// Low-level HTTP call to LRCLIB API
+    private func executeNetworkSearch(query: String) async -> [LyricSearchResult] {
+        guard let encoded = query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
+              let url = URL(string: "https://lrclib.net/api/search?q=\(encoded)") else {
             return []
         }
         
         do {
             var request = URLRequest(url: url)
-            request.timeoutInterval = 10.0
-            request.setValue("ProCam-AudioEditor/1.0", forHTTPHeaderField: "User-Agent")
+            request.timeoutInterval = 8.0
+            request.setValue("ProCam-AudioEditor/1.0 (https://procam.app)", forHTTPHeaderField: "User-Agent")
             
             let (data, response) = try await URLSession.shared.data(for: request)
-            guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-                self.isSearching = false
-                self.errorMessage = "Không thể tải dữ liệu từ máy chủ"
+            guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
                 return []
             }
             
-            let results = try JSONDecoder().decode([LyricSearchResult].self, from: data)
-            // Prioritize results with synced LRC lyrics
-            let sorted = results.sorted { lhs, rhs in
-                if lhs.hasSyncedLyrics != rhs.hasSyncedLyrics {
-                    return lhs.hasSyncedLyrics && !rhs.hasSyncedLyrics
-                }
-                return false
-            }
-            
-            self.searchResults = sorted
-            self.isSearching = false
-            return sorted
+            let decoded = try JSONDecoder().decode([LyricSearchResult].self, from: data)
+            return decoded
         } catch {
-            self.isSearching = false
-            self.errorMessage = "Lỗi kết nối: \(error.localizedDescription)"
             return []
         }
     }
     
+    /// Cleans up raw recording/file names into clean searchable song names
+    private func cleanQueryString(_ raw: String) -> String {
+        var str = raw
+        // Remove file extensions
+        str = str.replacingOccurrences(of: "\\.[a-zA-Z0-9]{2,4}$", with: "", options: .regularExpression)
+        // Remove bracketed info [MV], (Lyrics), (Audio)
+        str = str.replacingOccurrences(of: "\\[[^\\]]*\\]|\\([^\\)]*\\)", with: "", options: .regularExpression)
+        // Remove underscores
+        str = str.replacingOccurrences(of: "_", with: " ")
+        return str.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+    
     /// Auto-fetch best matched LRC lyrics for a given track title and audio duration
     public func autoFetchBestMatch(trackTitle: String, duration: TimeInterval) async -> String? {
-        // Strip out file extensions or recording tags like "Ghi âm 1", ".mp3", "(1)"
-        var cleanTitle = trackTitle
-            .replacingOccurrences(of: "\\.[a-zA-Z0-9]{2,4}$", with: "", options: .regularExpression)
-            .replacingOccurrences(of: "_", with: " ")
-            .trimmingCharacters(in: .whitespacesAndNewlines)
-        
-        guard !cleanTitle.isEmpty else { return nil }
-        
-        let results = await search(query: cleanTitle)
-        
-        // Find best match with synced lyrics
+        let results = await search(query: trackTitle)
         if let exactSynced = results.first(where: { $0.hasSyncedLyrics }) {
             return exactSynced.syncedLyrics
         }
-        
         return results.first?.resolvedLyrics
     }
 }
