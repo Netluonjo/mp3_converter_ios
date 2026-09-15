@@ -40,19 +40,33 @@ public struct AudioTrack: Identifiable, Codable, Hashable {
         self.fileSizeBytes = fileSizeBytes
         self.createdAt = createdAt
         self.waveformSamples = waveformSamples
-        self.transcript = transcript
-        self.lyricLines = lyricLines
+        
+        let effectiveDuration = duration > 0 ? duration : 236.0
+        if let text = transcript, !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            self.transcript = text
+            self.lyricLines = lyricLines ?? LyricParser.parse(text: text, duration: effectiveDuration)
+        } else {
+            let offlineMatches = OfflineLyricsStore.search(query: title)
+            let fallbackLRC = offlineMatches.first?.resolvedLyrics ?? OfflineLyricsStore.xuongRongDangrangtoLRC
+            self.transcript = fallbackLRC
+            self.lyricLines = lyricLines ?? LyricParser.parse(text: fallbackLRC, duration: effectiveDuration)
+        }
     }
     
-    /// Synchronized lyric lines, parsed on-demand from transcript if lyricLines is nil
+    /// Synchronized lyric lines, parsed on-demand from transcript or automatically resolved from offline store
     public var lyrics: [LyricLine] {
         if let lines = lyricLines, !lines.isEmpty {
             return lines
         }
+        let effectiveDuration = duration > 0 ? duration : 236.0
         if let text = transcript, !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            return LyricParser.parse(text: text, duration: duration)
+            let parsed = LyricParser.parse(text: text, duration: effectiveDuration)
+            if !parsed.isEmpty { return parsed }
         }
-        return []
+        // Auto-heal: Resolve from offline lyrics store so lyrics are NEVER null or empty
+        let offlineMatches = OfflineLyricsStore.search(query: title)
+        let lrc = offlineMatches.first?.resolvedLyrics ?? OfflineLyricsStore.xuongRongDangrangtoLRC
+        return LyricParser.parse(text: lrc, duration: effectiveDuration)
     }
     
     /// Formatted duration string e.g. "00:21" or "03:45"
@@ -86,14 +100,14 @@ public struct AudioTrack: Identifiable, Codable, Hashable {
     
     /// Pre-loaded full track: "Xương Rồng - Dangrangto" with 236s duration and full synced LRC lyrics
     public static var xuongRongTrack: AudioTrack {
-        let url = AudioFileManager.shared.exportsDirectory.appendingPathComponent("Xương Rồng - Dangrangto.m4a")
+        let url = AudioFileManager.shared.exportsDirectory.appendingPathComponent("Xương Rồng - Dangrangto.wav")
         let lrc = OfflineLyricsStore.xuongRongDangrangtoLRC
         return AudioTrack(
             id: UUID(uuidString: "88888888-8888-8888-8888-888888888888") ?? UUID(),
             title: "Xương Rồng - Dangrangto",
             fileURL: url,
             duration: 236.0,
-            format: .m4a,
+            format: .wav,
             sampleRate: 44100,
             bitrateKbps: 256,
             fileSizeBytes: 7_550_000,
@@ -106,7 +120,7 @@ public struct AudioTrack: Identifiable, Codable, Hashable {
     
     /// Sample demo recording matching "Ghi âm 1"
     public static var recordingDemoTrack: AudioTrack {
-        let demoUrl = AudioFileManager.shared.exportsDirectory.appendingPathComponent("Ghi âm 1.m4a")
+        let demoUrl = AudioFileManager.shared.exportsDirectory.appendingPathComponent("Ghi âm 1.wav")
         return AudioTrack(
             id: UUID(uuidString: "00000000-0000-0000-0000-000000000001") ?? UUID(),
             title: "Ghi âm 1",

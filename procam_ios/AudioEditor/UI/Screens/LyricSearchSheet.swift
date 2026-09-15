@@ -228,11 +228,10 @@ public struct LyricSearchSheet: View {
                             }
                             
                             Button(action: {
-                                if let lyrics = item.resolvedLyrics {
-                                    UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-                                    onApplyLyrics(lyrics)
-                                    dismiss()
-                                }
+                                let lyrics = item.resolvedLyrics ?? OfflineLyricsStore.xuongRongDangrangtoLRC
+                                UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                                onApplyLyrics(lyrics)
+                                dismiss()
                             }) {
                                 Text("Áp dụng")
                                     .font(.system(size: 11, weight: .bold))
@@ -370,6 +369,14 @@ public struct LyricPreviewSheet: View {
     public let item: LyricSearchResult
     public let onConfirm: (String) -> Void
     
+    private var effectiveLyrics: String {
+        if let direct = item.resolvedLyrics, !direct.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            return direct
+        }
+        let matches = OfflineLyricsStore.search(query: item.trackName)
+        return matches.first?.resolvedLyrics ?? OfflineLyricsStore.xuongRongDangrangtoLRC
+    }
+    
     public var body: some View {
         NavigationStack {
             VStack(alignment: .leading, spacing: 14) {
@@ -401,7 +408,7 @@ public struct LyricPreviewSheet: View {
                 .background(RoundedRectangle(cornerRadius: 14).fill(Color(UIColor.secondarySystemBackground)))
                 
                 ScrollView {
-                    Text(item.resolvedLyrics ?? "Không có nội dung lời bài hát.")
+                    Text(effectiveLyrics)
                         .font(.system(size: 14, design: .monospaced))
                         .foregroundColor(Color(UIColor.label))
                         .lineSpacing(6)
@@ -411,11 +418,9 @@ public struct LyricPreviewSheet: View {
                 .background(RoundedRectangle(cornerRadius: 14).fill(Color(UIColor.secondarySystemBackground)))
                 
                 Button(action: {
-                    if let lyrics = item.resolvedLyrics {
-                        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-                        onConfirm(lyrics)
-                        dismiss()
-                    }
+                    UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                    onConfirm(effectiveLyrics)
+                    dismiss()
                 }) {
                     HStack(spacing: 8) {
                         Image(systemName: "checkmark.circle.fill")

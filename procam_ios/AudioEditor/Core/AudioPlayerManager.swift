@@ -70,15 +70,23 @@ public final class AudioPlayerManager: NSObject, ObservableObject, AVAudioPlayer
     
     // MARK: - Playback Controls
     
-    /// Loads a track for playback
+    /// Loads a track for playback with auto-healing of lyrics
     public func loadTrack(_ track: AudioTrack) {
-        currentTrack = track
-        duration = track.duration
+        var mutableTrack = track
+        if mutableTrack.transcript == nil || mutableTrack.lyrics.isEmpty {
+            let matches = OfflineLyricsStore.search(query: track.title)
+            if let best = matches.first, let lrc = best.resolvedLyrics {
+                mutableTrack.transcript = lrc
+                mutableTrack.lyricLines = LyricParser.parse(text: lrc, duration: track.duration)
+            }
+        }
+        currentTrack = mutableTrack
+        duration = mutableTrack.duration
         currentTime = 0.0
         
-        guard FileManager.default.fileExists(atPath: track.fileURL.path) else {
+        guard FileManager.default.fileExists(atPath: mutableTrack.fileURL.path) else {
             // Virtual simulation mode for demo track if file not written yet
-            setupVirtualDemo(duration: track.duration)
+            setupVirtualDemo(duration: mutableTrack.duration)
             return
         }
         

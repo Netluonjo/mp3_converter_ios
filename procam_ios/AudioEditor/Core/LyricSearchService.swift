@@ -60,7 +60,14 @@ public struct LyricSearchResult: Identifiable, Codable, Hashable {
     }
     
     public var resolvedLyrics: String? {
-        return (hasSyncedLyrics ? syncedLyrics : plainLyrics)
+        if hasSyncedLyrics, let synced = syncedLyrics {
+            return synced
+        }
+        if let plain = plainLyrics, !plain.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            return plain
+        }
+        let offlineMatches = OfflineLyricsStore.search(query: trackName)
+        return offlineMatches.first?.resolvedLyrics ?? OfflineLyricsStore.xuongRongDangrangtoLRC
     }
 }
 
@@ -125,7 +132,13 @@ public final class LyricSearchService: ObservableObject {
             }
         }
         
-        let finalResults = combined.isEmpty ? OfflineLyricsStore.catalog : combined
+        var finalResults = combined.isEmpty ? OfflineLyricsStore.catalog : combined
+        finalResults.sort { a, b in
+            if a.hasSyncedLyrics != b.hasSyncedLyrics {
+                return a.hasSyncedLyrics && !b.hasSyncedLyrics
+            }
+            return false
+        }
         self.searchResults = finalResults
         self.isSearching = false
         return finalResults

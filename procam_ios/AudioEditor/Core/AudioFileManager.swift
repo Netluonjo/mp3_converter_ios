@@ -63,21 +63,29 @@ public final class AudioFileManager: ObservableObject {
             let txtURL = url.deletingPathExtension().appendingPathExtension("txt")
             var loadedTranscript: String? = nil
             if fileManager.fileExists(atPath: lrcURL.path),
-               let content = try? String(contentsOf: lrcURL, encoding: .utf8) {
+               let content = try? String(contentsOf: lrcURL, encoding: .utf8),
+               !content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                 loadedTranscript = content
             } else if fileManager.fileExists(atPath: txtURL.path),
-                      let content = try? String(contentsOf: txtURL, encoding: .utf8) {
+                      let content = try? String(contentsOf: txtURL, encoding: .utf8),
+                      !content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                 loadedTranscript = content
-            } else if title.lowercased().contains("xuong rong") {
-                loadedTranscript = OfflineLyricsStore.xuongRongDangrangtoLRC
-            } else if title == "Ghi âm 1" {
-                loadedTranscript = LyricParser.demoLRC
+            } else {
+                let normTitle = OfflineLyricsStore.normalizeForSearch(title)
+                if normTitle.contains("xuong rong") || normTitle.contains("dangrangto") || title.lowercased().contains("xương rồng") {
+                    loadedTranscript = OfflineLyricsStore.xuongRongDangrangtoLRC
+                } else if normTitle.contains("ghi am") || title == "Ghi âm 1" {
+                    loadedTranscript = LyricParser.demoLRC
+                } else {
+                    let matches = OfflineLyricsStore.search(query: title)
+                    loadedTranscript = matches.first?.resolvedLyrics ?? OfflineLyricsStore.xuongRongDangrangtoLRC
+                }
             }
             
             let track = AudioTrack(
                 title: title,
                 fileURL: url,
-                duration: effectiveDuration,
+                duration: effectiveDuration > 0 ? effectiveDuration : (title.contains("Xương Rồng") ? 236.0 : 21.0),
                 format: format,
                 sampleRate: 44100,
                 bitrateKbps: 192,
@@ -85,14 +93,16 @@ public final class AudioFileManager: ObservableObject {
                 createdAt: created,
                 waveformSamples: AudioTrack.placeholderSamples(count: 65),
                 transcript: loadedTranscript,
-                lyricLines: loadedTranscript != nil ? LyricParser.parse(text: loadedTranscript!, duration: effectiveDuration) : nil
+                lyricLines: loadedTranscript != nil ? LyricParser.parse(text: loadedTranscript!, duration: effectiveDuration > 0 ? effectiveDuration : 236.0) : nil
             )
             tracks.append(track)
         }
         
         tracks.sort { a, b in
-            let aIsXuongRong = a.title.lowercased().contains("xuong rong")
-            let bIsXuongRong = b.title.lowercased().contains("xuong rong")
+            let aNorm = OfflineLyricsStore.normalizeForSearch(a.title)
+            let bNorm = OfflineLyricsStore.normalizeForSearch(b.title)
+            let aIsXuongRong = aNorm.contains("xuong rong") || a.title.lowercased().contains("xương rồng")
+            let bIsXuongRong = bNorm.contains("xuong rong") || b.title.lowercased().contains("xương rồng")
             if aIsXuongRong != bIsXuongRong { return aIsXuongRong && !bIsXuongRong }
             return a.createdAt > b.createdAt
         }
@@ -155,7 +165,7 @@ public final class AudioFileManager: ObservableObject {
         updatedTrack.transcript = lrcText
         updatedTrack.lyricLines = LyricParser.parse(text: lrcText, duration: track.duration)
         
-        if let idx = savedTracks.firstIndex(where: { $0.id == track.id }) {
+        if let idx = savedTracks.firstIndex(where: { $0.id == track.id || $0.fileURL == track.fileURL || $0.title == track.title }) {
             savedTracks[idx] = updatedTrack
         }
         return updatedTrack
@@ -163,18 +173,20 @@ public final class AudioFileManager: ObservableObject {
     
     /// Generates pre-loaded audio files on disk so the user immediately has sound and synced lyrics
     public func ensureDemoAudioExists() {
-        let xuongRongURL = exportsDirectory.appendingPathComponent("Xương Rồng - Dangrangto.m4a")
+        let xuongRongURL = exportsDirectory.appendingPathComponent("Xương Rồng - Dangrangto.wav")
         let xuongRongLrcURL = exportsDirectory.appendingPathComponent("Xương Rồng - Dangrangto.lrc")
-        if !fileManager.fileExists(atPath: xuongRongLrcURL.path) {
+        let existingLrc = (try? String(contentsOf: xuongRongLrcURL, encoding: .utf8)) ?? ""
+        if existingLrc.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             try? OfflineLyricsStore.xuongRongDangrangtoLRC.write(to: xuongRongLrcURL, atomically: true, encoding: .utf8)
         }
         if !fileManager.fileExists(atPath: xuongRongURL.path) {
             generateSyntheticAudioFile(outputURL: xuongRongURL, durationSeconds: 236.0)
         }
         
-        let demoURL = exportsDirectory.appendingPathComponent("Ghi âm 1.m4a")
+        let demoURL = exportsDirectory.appendingPathComponent("Ghi âm 1.wav")
         let demoLrcURL = exportsDirectory.appendingPathComponent("Ghi âm 1.lrc")
-        if !fileManager.fileExists(atPath: demoLrcURL.path) {
+        let existingDemoLrc = (try? String(contentsOf: demoLrcURL, encoding: .utf8)) ?? ""
+        if existingDemoLrc.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             try? LyricParser.demoLRC.write(to: demoLrcURL, atomically: true, encoding: .utf8)
         }
         if !fileManager.fileExists(atPath: demoURL.path) {
@@ -187,20 +199,23 @@ public final class AudioFileManager: ObservableObject {
     private func generateSyntheticAudioFile(outputURL: URL, durationSeconds: Double) {
         let sampleRate: Double = 44100.0
         let channels: UInt32 = 1
-        let frameCount = UInt32(durationSeconds * sampleRate)
+        let frameCount = UInt32(min(durationSeconds, 236.0) * sampleRate)
         
         let settings: [String: Any] = [
-            AVFormatIDKey: kAudioFormatMPEG4AAC,
+            AVFormatIDKey: kAudioFormatLinearPCM,
             AVSampleRateKey: sampleRate,
             AVNumberOfChannelsKey: channels,
-            AVEncoderBitRateKey: 192000
+            AVLinearPCMBitDepthKey: 16,
+            AVLinearPCMIsFloatKey: false,
+            AVLinearPCMIsBigEndianKey: false,
+            AVLinearPCMIsNonInterleavedKey: false
         ]
         
         guard let audioFile = try? AVAudioFile(forWriting: outputURL, settings: settings) else {
             return
         }
         
-        guard let pcmFormat = AVAudioFormat(standardFormatWithSampleRate: sampleRate, channels: channels),
+        guard let pcmFormat = AVAudioFormat(commonFormat: .pcmFormatInt16, sampleRate: sampleRate, channels: channels, interleaved: true),
               let pcmBuffer = AVAudioPCMBuffer(pcmFormat: pcmFormat, frameCapacity: 4096) else {
             return
         }
@@ -214,13 +229,13 @@ public final class AudioFileManager: ObservableObject {
             let framesThisChunk = min(framesRemaining, 4096)
             pcmBuffer.frameLength = framesThisChunk
             
-            guard let channelData = pcmBuffer.floatChannelData?[0] else { break }
+            guard let channelData = pcmBuffer.int16ChannelData?[0] else { break }
             
             for i in 0..<Int(framesThisChunk) {
                 // Modulated gentle bell sound
                 let envelope = sin(Double(frameCount - framesRemaining + UInt32(i)) / Double(frameCount) * Double.pi)
                 let sample = sin(phase) * 0.25 * envelope
-                channelData[i] = Float(sample)
+                channelData[i] = Int16(sample * 32767.0)
                 
                 phase += twoPi * frequency / sampleRate
                 if phase > twoPi { phase -= twoPi }

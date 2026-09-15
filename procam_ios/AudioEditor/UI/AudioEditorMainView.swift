@@ -57,7 +57,10 @@ public struct AudioEditorMainView: View {
         .tint(AudioEditorTheme.accentRed)
         .onAppear {
             fileManager.ensureDemoAudioExists()
-            if let xuongRong = fileManager.savedTracks.first(where: { $0.title.lowercased().contains("xuong rong") }) {
+            if let xuongRong = fileManager.savedTracks.first(where: {
+                let norm = OfflineLyricsStore.normalizeForSearch($0.title)
+                return norm.contains("xuong rong") || $0.title.lowercased().contains("xương rồng")
+            }) {
                 playerManager.loadTrack(xuongRong)
             } else if let first = fileManager.savedTracks.first {
                 playerManager.loadTrack(first)

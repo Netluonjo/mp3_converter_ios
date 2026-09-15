@@ -79,8 +79,13 @@ public struct AudioPlayerDetailView: View {
                                     .font(.system(size: 14, weight: .bold))
                                     .foregroundColor(Color(UIColor.label))
                                     .lineLimit(1)
+                            } else if let first = lines.first {
+                                Text(first.text)
+                                    .font(.system(size: 14, weight: .bold))
+                                    .foregroundColor(Color(UIColor.label))
+                                    .lineLimit(1)
                             } else {
-                                Text(lines.isEmpty ? "Nhấn để tìm & đồng bộ lời bài hát" : "Chạm để mở toàn bộ lời bài hát")
+                                Text("Chạm để tìm & đồng bộ lời bài hát")
                                     .font(.system(size: 13, weight: .medium))
                                     .foregroundColor(.secondary)
                             }
@@ -174,6 +179,12 @@ public struct AudioPlayerDetailView: View {
         .onAppear {
             if playerManager.currentTrack == nil {
                 playerManager.loadTrack(fileManager.savedTracks.first ?? AudioTrack.demoTrack)
+            }
+            if let curr = playerManager.currentTrack, curr.lyrics.isEmpty || curr.transcript == nil {
+                let matches = OfflineLyricsStore.search(query: curr.title)
+                let lrc = matches.first?.resolvedLyrics ?? OfflineLyricsStore.xuongRongDangrangtoLRC
+                let updated = fileManager.saveLyrics(for: curr, lrcText: lrc)
+                playerManager.updateTrackLyrics(updated)
             }
         }
     }

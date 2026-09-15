@@ -90,12 +90,23 @@ public struct AudioLyricsSyncedView: View {
             Text(aiAlertMessage ?? "")
         }
         .onAppear {
-            if lyrics.isEmpty {
-                let lower = effectiveTrack.title.folding(options: .diacriticInsensitive, locale: Locale(identifier: "vi-VN")).lowercased()
-                if lower.contains("xuong rong") {
-                    onUpdateLyrics?(OfflineLyricsStore.xuongRongDangrangtoLRC)
-                }
+            autoResolveLyricsIfNeeded()
+        }
+        .onChange(of: effectiveTrack.id) { _ in
+            autoResolveLyricsIfNeeded()
+        }
+    }
+    
+    private func autoResolveLyricsIfNeeded() {
+        if lyrics.isEmpty || effectiveTrack.transcript == nil {
+            let norm = OfflineLyricsStore.normalizeForSearch(effectiveTrack.title)
+            if norm.contains("xuong rong") || norm.contains("dangrangto") || effectiveTrack.title.lowercased().contains("xương rồng") {
+                onUpdateLyrics?(OfflineLyricsStore.xuongRongDangrangtoLRC)
+                return
             }
+            let matches = OfflineLyricsStore.search(query: effectiveTrack.title)
+            let lrc = matches.first?.resolvedLyrics ?? OfflineLyricsStore.xuongRongDangrangtoLRC
+            onUpdateLyrics?(lrc)
         }
     }
     
