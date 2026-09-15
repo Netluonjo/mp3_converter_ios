@@ -50,7 +50,7 @@ public struct AudioPlayerDetailView: View {
             
             Spacer()
             
-            // MARK: - Center Content (Waveform or Transcript)
+            // MARK: - Center Content (Waveform or Synchronized Lyrics)
             if selectedTab == 0 {
                 AudioWaveformVisualizer(
                     samples: currentTrack.waveformSamples,
@@ -61,9 +61,16 @@ public struct AudioPlayerDetailView: View {
                 )
                 .padding(.vertical, 20)
             } else {
-                transcriptCardView
-                    .padding(.horizontal, 24)
-                    .frame(height: 220)
+                AudioLyricsSyncedView(
+                    playerManager: playerManager,
+                    track: currentTrack,
+                    onUpdateLyrics: { newLRC in
+                        let updated = fileManager.saveLyrics(for: currentTrack, lrcText: newLRC)
+                        playerManager.loadTrack(updated)
+                    }
+                )
+                .padding(.horizontal, 20)
+                .frame(height: 230)
             }
             
             Spacer()
@@ -209,16 +216,16 @@ public struct AudioPlayerDetailView: View {
                 )
             }
             
-            // Tab: Văn bản
+            // Tab: Lời bài hát
             Button(action: {
                 withAnimation(.easeInOut(duration: 0.2)) {
                     selectedTab = 1
                 }
             }) {
                 HStack(spacing: 6) {
-                    Image(systemName: "text.bubble")
+                    Image(systemName: "music.mic")
                         .font(.system(size: 13, weight: .semibold))
-                    Text("Văn bản")
+                    Text("Lời bài hát")
                         .font(.system(size: 14, weight: .semibold))
                 }
                 .foregroundColor(selectedTab == 1 ? .white : Color(UIColor.secondaryLabel))
@@ -236,31 +243,6 @@ public struct AudioPlayerDetailView: View {
             Capsule()
                 .fill(Color(UIColor.secondarySystemBackground))
         )
-    }
-    
-    private var transcriptCardView: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 12) {
-                HStack {
-                    Image(systemName: "waveform.badge.magnifyingglass")
-                        .foregroundColor(AudioEditorTheme.accentRed)
-                    Text("Bản ghi âm thanh sang chữ (AI Transcript)")
-                        .font(.system(size: 13, weight: .semibold))
-                        .foregroundColor(Color(UIColor.secondaryLabel))
-                    Spacer()
-                }
-                
-                Text(currentTrack.transcript ?? "Chưa có bản ghi văn bản cho tệp này. Bạn có thể nhấn 'Trích xuất văn bản' để nhận diện lời thoại tự động bằng bộ nhận dạng iOS Speech.")
-                    .font(.system(size: 15, weight: .regular))
-                    .foregroundColor(Color(UIColor.label))
-                    .lineSpacing(6)
-            }
-            .padding(16)
-            .background(
-                RoundedRectangle(cornerRadius: 16)
-                    .fill(Color(UIColor.secondarySystemBackground))
-            )
-        }
     }
     
     private var bottomActionBar: some View {

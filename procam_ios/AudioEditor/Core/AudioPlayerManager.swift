@@ -14,6 +14,7 @@ public final class AudioPlayerManager: NSObject, ObservableObject, AVAudioPlayer
     @Published public var isLooping: Bool = false
     @Published public var isMuted: Bool = false
     @Published public var currentTrack: AudioTrack?
+    @Published public var lyricOffset: TimeInterval = 0.0
     
     // Normalized progress (0.0 to 1.0)
     public var progress: Double {
@@ -238,5 +239,39 @@ public final class AudioPlayerManager: NSObject, ObservableObject, AVAudioPlayer
         let minutes = totalSeconds / 60
         let seconds = totalSeconds % 60
         return String(format: "%02d:%02d", minutes, seconds)
+    }
+    
+    // MARK: - Synchronized Lyrics Support
+    
+    /// Returns the active lyric line index for the current playback time with lyricOffset applied
+    public func currentLyricIndex(for lyrics: [LyricLine]) -> Int? {
+        guard !lyrics.isEmpty else { return nil }
+        let effectiveTime = max(0, currentTime + lyricOffset)
+        
+        if effectiveTime < lyrics[0].startTime {
+            return 0
+        }
+        
+        for (index, line) in lyrics.enumerated() {
+            if effectiveTime >= line.startTime && effectiveTime < line.endTime {
+                return index
+            }
+        }
+        
+        if effectiveTime >= lyrics.last!.startTime {
+            return lyrics.count - 1
+        }
+        
+        return 0
+    }
+    
+    /// Adjust the lyric synchronization offset by delta seconds (e.g. +0.5s or -0.5s)
+    public func adjustLyricOffset(by delta: TimeInterval) {
+        lyricOffset = max(-10.0, min(10.0, lyricOffset + delta))
+    }
+    
+    /// Reset the lyric synchronization offset back to 0.0s
+    public func resetLyricOffset() {
+        lyricOffset = 0.0
     }
 }

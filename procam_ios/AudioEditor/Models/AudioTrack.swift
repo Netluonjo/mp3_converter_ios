@@ -14,6 +14,7 @@ public struct AudioTrack: Identifiable, Codable, Hashable {
     public var createdAt: Date
     public var waveformSamples: [Float]
     public var transcript: String?
+    public var lyricLines: [LyricLine]?
     
     public init(
         id: UUID = UUID(),
@@ -26,7 +27,8 @@ public struct AudioTrack: Identifiable, Codable, Hashable {
         fileSizeBytes: Int64 = 0,
         createdAt: Date = Date(),
         waveformSamples: [Float] = [],
-        transcript: String? = nil
+        transcript: String? = nil,
+        lyricLines: [LyricLine]? = nil
     ) {
         self.id = id
         self.title = title
@@ -39,6 +41,18 @@ public struct AudioTrack: Identifiable, Codable, Hashable {
         self.createdAt = createdAt
         self.waveformSamples = waveformSamples
         self.transcript = transcript
+        self.lyricLines = lyricLines
+    }
+    
+    /// Synchronized lyric lines, parsed on-demand from transcript if lyricLines is nil
+    public var lyrics: [LyricLine] {
+        if let lines = lyricLines, !lines.isEmpty {
+            return lines
+        }
+        if let text = transcript, !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            return LyricParser.parse(text: text, duration: duration)
+        }
+        return []
     }
     
     /// Formatted duration string e.g. "00:21" or "03:45"
@@ -84,7 +98,8 @@ public struct AudioTrack: Identifiable, Codable, Hashable {
             fileSizeBytes: 512_000,
             createdAt: Date(),
             waveformSamples: placeholderSamples(count: 65),
-            transcript: "Xin chào! Đây là bản ghi âm mẫu chất lượng cao. Bạn có thể cắt ghép nhạc, trích xuất âm thanh từ video, tăng âm lượng và đổi định dạng sang MP3/M4A/WAV/FLAC dễ dàng."
+            transcript: LyricParser.demoLRC,
+            lyricLines: LyricParser.parse(text: LyricParser.demoLRC, duration: 21.0)
         )
     }
 }

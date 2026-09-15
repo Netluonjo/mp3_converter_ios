@@ -58,6 +58,20 @@ public final class AudioFileManager: ObservableObject {
             let durationSeconds = CMTimeGetSeconds(asset.duration)
             let effectiveDuration = durationSeconds.isNaN ? 0 : durationSeconds
             
+            // Check for sidecar LRC or TXT synchronized lyrics file
+            let lrcURL = url.deletingPathExtension().appendingPathExtension("lrc")
+            let txtURL = url.deletingPathExtension().appendingPathExtension("txt")
+            var loadedTranscript: String? = nil
+            if fileManager.fileExists(atPath: lrcURL.path),
+               let content = try? String(contentsOf: lrcURL, encoding: .utf8) {
+                loadedTranscript = content
+            } else if fileManager.fileExists(atPath: txtURL.path),
+                      let content = try? String(contentsOf: txtURL, encoding: .utf8) {
+                loadedTranscript = content
+            } else if title == "Ghi âm 1" {
+                loadedTranscript = LyricParser.demoLRC
+            }
+            
             let track = AudioTrack(
                 title: title,
                 fileURL: url,
@@ -67,7 +81,9 @@ public final class AudioFileManager: ObservableObject {
                 bitrateKbps: 192,
                 fileSizeBytes: fileSize,
                 createdAt: created,
-                waveformSamples: AudioTrack.placeholderSamples(count: 65)
+                waveformSamples: AudioTrack.placeholderSamples(count: 65),
+                transcript: loadedTranscript,
+                lyricLines: loadedTranscript != nil ? LyricParser.parse(text: loadedTranscript!, duration: effectiveDuration) : nil
             )
             tracks.append(track)
         }
@@ -92,17 +108,24 @@ public final class AudioFileManager: ObservableObject {
         return targetURL
     }
     
-    /// Deletes a track from disk
+    /// Deletes a track and its corresponding lyrics sidecar from disk
     public func deleteTrack(_ track: AudioTrack) {
         try? fileManager.removeItem(at: track.fileURL)
+        let lrcURL = track.fileURL.deletingPathExtension().appendingPathExtension("lrc")
+        try? fileManager.removeItem(at: lrcURL)
         reloadLibrary()
     }
     
-    /// Renames a track
+    /// Renames a track and its associated lyrics sidecar file
     public func renameTrack(_ track: AudioTrack, newName: String) -> AudioTrack? {
         let newURL = destinationURL(baseName: newName, format: track.format)
+        let oldLrcURL = track.fileURL.deletingPathExtension().appendingPathExtension("lrc")
+        let newLrcURL = newURL.deletingPathExtension().appendingPathExtension("lrc")
         do {
             try fileManager.moveItem(at: track.fileURL, to: newURL)
+            if fileManager.fileExists(atPath: oldLrcURL.path) {
+                try? fileManager.moveItem(at: oldLrcURL, to: newLrcURL)
+            }
             reloadLibrary()
             return savedTracks.first { $0.fileURL == newURL }
         } catch {
@@ -111,9 +134,29 @@ public final class AudioFileManager: ObservableObject {
         }
     }
     
+    /// Saves custom or updated lyrics/LRC for a track to disk and updates savedTracks
+    @discardableResult
+    public func saveLyrics(for track: AudioTrack, lrcText: String) -> AudioTrack {
+        let lrcURL = track.fileURL.deletingPathExtension().appendingPathExtension("lrc")
+        try? lrcText.write(to: lrcURL, atomically: true, encoding: .utf8)
+        
+        var updatedTrack = track
+        updatedTrack.transcript = lrcText
+        updatedTrack.lyricLines = LyricParser.parse(text: lrcText, duration: track.duration)
+        
+        if let idx = savedTracks.firstIndex(where: { $0.id == track.id }) {
+            savedTracks[idx] = updatedTrack
+        }
+        return updatedTrack
+    }
+    
     /// Generates a synthesized demo audio file on disk so the user immediately has sound
     public func ensureDemoAudioExists() {
         let demoURL = exportsDirectory.appendingPathComponent("Ghi âm 1.m4a")
+        let demoLrcURL = exportsDirectory.appendingPathComponent("Ghi âm 1.lrc")
+        if !fileManager.fileExists(atPath: demoLrcURL.path) {
+            try? LyricParser.demoLRC.write(to: demoLrcURL, atomically: true, encoding: .utf8)
+        }
         guard !fileManager.fileExists(atPath: demoURL.path) else { return }
         
         // Synthesize a gentle 440Hz warm chime tone for 21 seconds

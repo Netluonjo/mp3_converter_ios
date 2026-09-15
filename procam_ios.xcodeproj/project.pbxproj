@@ -31,6 +31,8 @@
 		AA0002152C12345600000215 /* AudioLibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001152C12345600000115 /* AudioLibraryView.swift */; };
 		AA0002162C12345600000216 /* AudioToolsGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001162C12345600000116 /* AudioToolsGridView.swift */; };
 		AA0002172C12345600000217 /* AudioEditorMainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001172C12345600000117 /* AudioEditorMainView.swift */; };
+		AA0002182C12345600000218 /* LyricLine.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001182C12345600000118 /* LyricLine.swift */; };
+		AA0002192C12345600000219 /* AudioLyricsSyncedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001192C12345600000119 /* AudioLyricsSyncedView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -60,6 +62,8 @@
 		AA0001152C12345600000115 /* AudioLibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioLibraryView.swift; sourceTree = "<group>"; };
 		AA0001162C12345600000116 /* AudioToolsGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioToolsGridView.swift; sourceTree = "<group>"; };
 		AA0001172C12345600000117 /* AudioEditorMainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioEditorMainView.swift; sourceTree = "<group>"; };
+		AA0001182C12345600000118 /* LyricLine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LyricLine.swift; sourceTree = "<group>"; };
+		AA0001192C12345600000119 /* AudioLyricsSyncedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioLyricsSyncedView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -110,6 +114,7 @@
 				AA0001022C12345600000102 /* AudioTrack.swift */,
 				AA0001032C12345600000103 /* AudioExportConfig.swift */,
 				AA0001042C12345600000104 /* AudioToolType.swift */,
+				AA0001182C12345600000118 /* LyricLine.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -152,6 +157,7 @@
 				AA00010C2C1234560000010C /* WaveformTrimmerOverlay.swift */,
 				AA00010D2C1234560000010D /* AudioScrubberBar.swift */,
 				AA00010E2C1234560000010E /* AudioControlButtonsView.swift */,
+				AA0001192C12345600000119 /* AudioLyricsSyncedView.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -320,6 +326,8 @@
 				AA0002152C12345600000215 /* AudioLibraryView.swift in Sources */,
 				AA0002162C12345600000216 /* AudioToolsGridView.swift in Sources */,
 				AA0002172C12345600000217 /* AudioEditorMainView.swift in Sources */,
+				AA0002182C12345600000218 /* LyricLine.swift in Sources */,
+				AA0002192C12345600000219 /* AudioLyricsSyncedView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
