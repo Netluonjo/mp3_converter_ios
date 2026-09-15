@@ -15,13 +15,13 @@ public struct LyricSearchSheet: View {
     
     // Popular quick search suggestion chips
     private let popularSuggestions = [
+        "Xương Rồng",
         "Chạy Ngay Đi",
         "Nơi Này Có Anh",
         "Nàng Thơ",
         "Cắt Đôi Nỗi Sầu",
         "Waiting For You",
-        "See You Again",
-        "Shape of You"
+        "See You Again"
     ]
     
     public init(

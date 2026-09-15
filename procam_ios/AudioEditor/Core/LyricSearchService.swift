@@ -116,14 +116,21 @@ public final class LyricSearchService: ObservableObject {
     }
     
     /// Cleans up raw recording/file names into clean searchable song names
-    private func cleanQueryString(_ raw: String) -> String {
+    public func cleanQueryString(_ raw: String) -> String {
         var str = raw
+        // Remove quotes
+        str = str.replacingOccurrences(of: "[\"']", with: "", options: .regularExpression)
         // Remove file extensions
         str = str.replacingOccurrences(of: "\\.[a-zA-Z0-9]{2,4}$", with: "", options: .regularExpression)
         // Remove bracketed info [MV], (Lyrics), (Audio)
         str = str.replacingOccurrences(of: "\\[[^\\]]*\\]|\\([^\\)]*\\)", with: "", options: .regularExpression)
         // Remove underscores
         str = str.replacingOccurrences(of: "_", with: " ")
+        
+        // Remove common Vietnamese & English song prefixes that prevent exact title matching
+        let prefixPattern = "^(lời\\s*bài\\s*hát|loi\\s*bai\\s*hat|bài\\s*hát|bai\\s*hat|nhạc|nhac|ca\\s*khúc|ca\\s*khuc|bài|bai|lyrics?\\s+of|lyrics?|song)\\s+"
+        str = str.replacingOccurrences(of: prefixPattern, with: "", options: [.regularExpression, .caseInsensitive])
+        
         return str.trimmingCharacters(in: .whitespacesAndNewlines)
     }
     
