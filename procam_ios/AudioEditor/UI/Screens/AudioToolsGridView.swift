@@ -13,6 +13,7 @@ public struct AudioToolsGridView: View {
         case merger
         case volumeBooster
         case formatConverter
+        case lyricFinder
         case ffmpegTerminal
         
         var id: Int { hashValue }
@@ -91,6 +92,15 @@ public struct AudioToolsGridView: View {
                     AudioEffectsSheet(track: currentTrack, fileManager: fileManager)
                 case .formatConverter:
                     ExportSettingsSheet(track: currentTrack, fileManager: fileManager)
+                case .lyricFinder:
+                    LyricSearchSheet(
+                        initialQuery: currentTrack.title,
+                        duration: currentTrack.duration,
+                        onApplyLyrics: { lrc in
+                            let updated = fileManager.saveLyrics(for: currentTrack, lrcText: lrc)
+                            playerManager.loadTrack(updated)
+                        }
+                    )
                 case .ffmpegTerminal:
                     FFmpegCommandsReferenceSheet()
                 }
@@ -106,6 +116,7 @@ public struct AudioToolsGridView: View {
             case .merger: activeSheet = .merger
             case .volumeBooster: activeSheet = .volumeBooster
             case .formatConverter: activeSheet = .formatConverter
+            case .lyricFinder: activeSheet = .lyricFinder
             }
         }) {
             HStack(spacing: 16) {

@@ -33,6 +33,9 @@
 		AA0002172C12345600000217 /* AudioEditorMainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001172C12345600000117 /* AudioEditorMainView.swift */; };
 		AA0002182C12345600000218 /* LyricLine.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001182C12345600000118 /* LyricLine.swift */; };
 		AA0002192C12345600000219 /* AudioLyricsSyncedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001192C12345600000119 /* AudioLyricsSyncedView.swift */; };
+		AA00021A2C1234560000021A /* LyricSearchService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00011A2C1234560000011A /* LyricSearchService.swift */; };
+		AA00021B2C1234560000021B /* SpeechRecognitionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00011B2C1234560000011B /* SpeechRecognitionService.swift */; };
+		AA00021C2C1234560000021C /* LyricSearchSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00011C2C1234560000011C /* LyricSearchSheet.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -64,6 +67,9 @@
 		AA0001172C12345600000117 /* AudioEditorMainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioEditorMainView.swift; sourceTree = "<group>"; };
 		AA0001182C12345600000118 /* LyricLine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LyricLine.swift; sourceTree = "<group>"; };
 		AA0001192C12345600000119 /* AudioLyricsSyncedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioLyricsSyncedView.swift; sourceTree = "<group>"; };
+		AA00011A2C1234560000011A /* LyricSearchService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LyricSearchService.swift; sourceTree = "<group>"; };
+		AA00011B2C1234560000011B /* SpeechRecognitionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechRecognitionService.swift; sourceTree = "<group>"; };
+		AA00011C2C1234560000011C /* LyricSearchSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LyricSearchSheet.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -127,6 +133,8 @@
 				AA0001072C12345600000107 /* WaveformExtractor.swift */,
 				AA0001082C12345600000108 /* AudioPlayerManager.swift */,
 				AA0001092C12345600000109 /* AudioFileManager.swift */,
+				AA00011A2C1234560000011A /* LyricSearchService.swift */,
+				AA00011B2C1234560000011B /* SpeechRecognitionService.swift */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -173,6 +181,7 @@
 				AA0001142C12345600000114 /* ExportSettingsSheet.swift */,
 				AA0001152C12345600000115 /* AudioLibraryView.swift */,
 				AA0001162C12345600000116 /* AudioToolsGridView.swift */,
+				AA00011C2C1234560000011C /* LyricSearchSheet.swift */,
 			);
 			path = Screens;
 			sourceTree = "<group>";
@@ -328,6 +337,9 @@
 				AA0002172C12345600000217 /* AudioEditorMainView.swift in Sources */,
 				AA0002182C12345600000218 /* LyricLine.swift in Sources */,
 				AA0002192C12345600000219 /* AudioLyricsSyncedView.swift in Sources */,
+				AA00021A2C1234560000021A /* LyricSearchService.swift in Sources */,
+				AA00021B2C1234560000021B /* SpeechRecognitionService.swift in Sources */,
+				AA00021C2C1234560000021C /* LyricSearchSheet.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

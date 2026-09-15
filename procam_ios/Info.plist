@@ -28,6 +28,8 @@
 	<string>Ứng dụng cần truy cập thư viện Ảnh để trích xuất âm thanh từ video và lưu tệp đã xuất.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Ứng dụng lưu ảnh và tệp âm thanh trực tiếp vào thư viện của bạn.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Ứng dụng cần quyền nhận diện giọng nói để tự động trích xuất lời thoại từ âm thanh.</string>
 	<key>UIFileSharingEnabled</key>
 	<true/>
 	<key>LSSupportsOpeningDocumentsInPlace</key>

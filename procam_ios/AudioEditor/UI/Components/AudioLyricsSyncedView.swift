@@ -6,15 +6,22 @@ import SwiftUI
 /// - Smooth automatic scrolling to keep active lyric centered (`ScrollViewReader`)
 /// - Tap any line to seek playback directly to that timestamp
 /// - Real-time sync offset adjustment (+/- 0.5s) to align with audio lag or lead
+/// - Built-in Online LRC Search from open database (LRCLIB)
+/// - Native Apple AI Speech Recognition to extract voice from recordings
 /// - Built-in LRC & text editor sheet with export and copy support
 public struct AudioLyricsSyncedView: View {
     @ObservedObject public var playerManager: AudioPlayerManager
     public let track: AudioTrack
     public var onUpdateLyrics: ((String) -> Void)?
     
+    @StateObject private var speechService = SpeechRecognitionService.shared
+    
     @State private var showEditSheet: Bool = false
+    @State private var showSearchSheet: Bool = false
     @State private var userIsScrolledAway: Bool = false
     @State private var copiedToast: Bool = false
+    @State private var aiAlertMessage: String? = nil
+    @State private var showAiAlert: Bool = false
     
     public init(
         playerManager: AudioPlayerManager,
@@ -36,10 +43,10 @@ public struct AudioLyricsSyncedView: View {
     
     public var body: some View {
         VStack(spacing: 8) {
-            // MARK: - Mini Top Header with Sync Controls
+            // MARK: - Mini Top Header with Sync Controls & Search
             topControlBar
             
-            // MARK: - Synchronized Lyrics List
+            // MARK: - Synchronized Lyrics List or Empty State
             if lyrics.isEmpty {
                 emptyLyricsCard
             } else {
@@ -63,6 +70,20 @@ public struct AudioLyricsSyncedView: View {
                     onUpdateLyrics?(newText)
                 }
             )
+        }
+        .sheet(isPresented: $showSearchSheet) {
+            LyricSearchSheet(
+                initialQuery: track.title,
+                duration: track.duration,
+                onApplyLyrics: { newLRC in
+                    onUpdateLyrics?(newLRC)
+                }
+            )
+        }
+        .alert("Thông báo nhận diện", isPresented: $showAiAlert) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(aiAlertMessage ?? "")
         }
     }
     
@@ -118,13 +139,24 @@ public struct AudioLyricsSyncedView: View {
             .padding(.vertical, 2)
             .background(Capsule().fill(Color(UIColor.systemBackground).opacity(0.6)))
             
+            // Search Online Lyrics Button
+            Button(action: {
+                showSearchSheet = true
+            }) {
+                Image(systemName: "magnifyingglass")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundColor(AudioEditorTheme.accentRed)
+                    .padding(5)
+                    .background(Circle().fill(Color(UIColor.systemBackground).opacity(0.6)))
+            }
+            
             // Edit LRC Button
             Button(action: {
                 showEditSheet = true
             }) {
                 Image(systemName: "pencil.line")
                     .font(.system(size: 12, weight: .semibold))
-                    .foregroundColor(AudioEditorTheme.accentRed)
+                    .foregroundColor(Color(UIColor.secondaryLabel))
                     .padding(5)
                     .background(Circle().fill(Color(UIColor.systemBackground).opacity(0.6)))
             }
@@ -231,36 +263,112 @@ public struct AudioLyricsSyncedView: View {
     
     private var emptyLyricsCard: some View {
         VStack(spacing: 12) {
-            Image(systemName: "text.badge.plus")
-                .font(.system(size: 32))
-                .foregroundColor(AudioEditorTheme.accentRed.opacity(0.7))
-                .padding(.top, 8)
-            
-            Text("Chưa có lời bài hát đồng bộ")
-                .font(.system(size: 14, weight: .bold))
-                .foregroundColor(Color(UIColor.label))
-            
-            Text("Nhấn bên dưới để nhập file LRC hoặc dán lời bài hát để đồng bộ chính xác với nhạc đang chạy.")
-                .font(.system(size: 12))
-                .foregroundColor(Color(UIColor.secondaryLabel))
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, 16)
-            
-            Button(action: { showEditSheet = true }) {
-                HStack(spacing: 6) {
-                    Image(systemName: "plus.circle.fill")
-                    Text("Nhập lời bài hát / LRC")
+            if speechService.isTranscribing {
+                VStack(spacing: 12) {
+                    ProgressView()
+                        .scaleEffect(1.2)
+                        .padding(.top, 8)
+                    Text(speechService.progressText)
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundColor(Color(UIColor.secondaryLabel))
                 }
-                .font(.system(size: 13, weight: .semibold))
-                .foregroundColor(.white)
-                .padding(.vertical, 8)
-                .padding(.horizontal, 16)
-                .background(Capsule().fill(AudioEditorTheme.accentRed))
+                .frame(height: 140)
+            } else {
+                Image(systemName: "music.note.magnifyingglass")
+                    .font(.system(size: 30))
+                    .foregroundColor(AudioEditorTheme.accentRed)
+                    .padding(.top, 4)
+                
+                Text("Chưa có lời bài hát")
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundColor(Color(UIColor.label))
+                
+                Text("Chọn một trong các cách dưới đây để lấy lời bài hát:")
+                    .font(.system(size: 11))
+                    .foregroundColor(Color(UIColor.secondaryLabel))
+                    .multilineTextAlignment(.center)
+                
+                // Action Buttons Grid
+                VStack(spacing: 8) {
+                    // Button 1: Online search
+                    Button(action: { showSearchSheet = true }) {
+                        HStack(spacing: 6) {
+                            Image(systemName: "globe.americas.fill")
+                            Text("Tìm lời bài hát Online (LRC)")
+                        }
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 8)
+                        .background(Capsule().fill(AudioEditorTheme.accentRed))
+                    }
+                    
+                    HStack(spacing: 8) {
+                        // Button 2: Speech Recognition
+                        Button(action: startSpeechRecognition) {
+                            HStack(spacing: 4) {
+                                Image(systemName: "waveform.and.mic")
+                                Text("Nhận diện AI")
+                            }
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundColor(Color(UIColor.label))
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 7)
+                            .background(Capsule().fill(Color(UIColor.tertiarySystemBackground)))
+                        }
+                        
+                        // Button 3: Use Demo Lyrics
+                        Button(action: {
+                            onUpdateLyrics?(LyricParser.demoLRC)
+                        }) {
+                            HStack(spacing: 4) {
+                                Image(systemName: "sparkles")
+                                Text("Dùng lời mẫu")
+                            }
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundColor(Color(UIColor.label))
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 7)
+                            .background(Capsule().fill(Color(UIColor.tertiarySystemBackground)))
+                        }
+                        
+                        // Button 4: Manual Paste
+                        Button(action: { showEditSheet = true }) {
+                            HStack(spacing: 4) {
+                                Image(systemName: "pencil")
+                                Text("Dán LRC")
+                            }
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundColor(Color(UIColor.label))
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 7)
+                            .background(Capsule().fill(Color(UIColor.tertiarySystemBackground)))
+                        }
+                    }
+                }
+                .padding(.horizontal, 4)
             }
-            .padding(.bottom, 8)
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 12)
+        .padding(.vertical, 8)
+    }
+    
+    private func startSpeechRecognition() {
+        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+        Task {
+            do {
+                let generatedLRC = try await speechService.transcribeAudio(url: track.fileURL, duration: track.duration)
+                if !generatedLRC.isEmpty {
+                    onUpdateLyrics?(generatedLRC)
+                } else {
+                    aiAlertMessage = "Không nhận diện được giọng nói trong tệp này."
+                    showAiAlert = true
+                }
+            } catch {
+                aiAlertMessage = error.localizedDescription
+                showAiAlert = true
+            }
+        }
     }
 }
 
