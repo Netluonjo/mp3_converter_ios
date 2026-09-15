@@ -4,12 +4,47 @@ import Combine
 /// Model representing a lyric search result from LRCLIB API
 public struct LyricSearchResult: Identifiable, Codable, Hashable {
     public let id: Int
-    public let trackName: String
-    public let artistName: String
+    public var trackName: String
+    public var artistName: String
     public let albumName: String?
     public let duration: Double?
     public let syncedLyrics: String?
     public let plainLyrics: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case id, trackName, name, artistName, albumName, duration, syncedLyrics, plainLyrics
+    }
+    
+    public init(
+        id: Int,
+        trackName: String,
+        artistName: String,
+        albumName: String? = nil,
+        duration: Double? = nil,
+        syncedLyrics: String? = nil,
+        plainLyrics: String? = nil
+    ) {
+        self.id = id
+        self.trackName = trackName
+        self.artistName = artistName
+        self.albumName = albumName
+        self.duration = duration
+        self.syncedLyrics = syncedLyrics
+        self.plainLyrics = plainLyrics
+    }
+    
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.id = try container.decode(Int.self, forKey: .id)
+        let rawTrack = try container.decodeIfPresent(String.self, forKey: .trackName) ??
+                       (try container.decodeIfPresent(String.self, forKey: .name) ?? "Không rõ tên")
+        self.trackName = rawTrack
+        self.artistName = try container.decodeIfPresent(String.self, forKey: .artistName) ?? "Không rõ ca sĩ"
+        self.albumName = try container.decodeIfPresent(String.self, forKey: .albumName)
+        self.duration = try container.decodeIfPresent(Double.self, forKey: .duration)
+        self.syncedLyrics = try container.decodeIfPresent(String.self, forKey: .syncedLyrics)
+        self.plainLyrics = try container.decodeIfPresent(String.self, forKey: .plainLyrics)
+    }
     
     public var hasSyncedLyrics: Bool {
         guard let synced = syncedLyrics else { return false }
@@ -41,47 +76,38 @@ public final class LyricSearchService: ObservableObject {
     
     private init() {}
     
-    /// Searches for synced lyrics with multi-tier smart fallback (clean query -> parts -> unaccented)
+    /// Searches for synced lyrics with instant offline response followed by background network enrichment
     public func search(query: String) async -> [LyricSearchResult] {
         let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else {
-            self.searchResults = []
+            self.searchResults = OfflineLyricsStore.catalog
             self.hasAttemptedSearch = false
-            return []
+            return OfflineLyricsStore.catalog
         }
         
-        self.isSearching = true
         self.errorMessage = nil
         self.hasAttemptedSearch = true
         
-        // Tier 0: Clean query by stripping file extensions, quotes, and prefixes ("bài hát ", "lời bài hát ")
+        // Tier 0: Clean query by stripping prefixes ("tìm bài hát", "bài hát", etc.)
         let cleaned = cleanQueryString(trimmed)
+        let searchKeyword = cleaned.isEmpty ? trimmed : cleaned
         
-        // Tier 1: Check instant offline catalog (0ms latency, works offline)
-        let offlineMatches = OfflineLyricsStore.search(query: cleaned)
+        // Tier 1: Check instant offline catalog (0ms latency, zero delay)
+        let offlineMatches = OfflineLyricsStore.search(query: searchKeyword)
         if !offlineMatches.isEmpty {
             self.searchResults = offlineMatches
+            self.isSearching = false // Show offline matches immediately without blocking UI!
+        } else {
+            self.isSearching = true
         }
         
-        // Tier 2: Search online network database
-        var networkResults = await executeNetworkSearch(query: cleaned)
+        // Tier 2: Search online network database with fast 3.5s timeout
+        var networkResults = await executeNetworkSearch(query: searchKeyword)
         
-        // Tier 3: If no network results and query contains "-", search individual segments
-        if networkResults.isEmpty && cleaned.contains("-") {
-            let parts = cleaned.components(separatedBy: "-")
-            for part in parts {
-                let partClean = part.trimmingCharacters(in: .whitespacesAndNewlines)
-                if partClean.count >= 3 {
-                    networkResults = await executeNetworkSearch(query: partClean)
-                    if !networkResults.isEmpty { break }
-                }
-            }
-        }
-        
-        // Tier 4: If still no network results, try folding Vietnamese accents
+        // Tier 3: If no network results, try folding Vietnamese accents
         if networkResults.isEmpty {
-            let folded = cleaned.folding(options: .diacriticInsensitive, locale: Locale(identifier: "vi-VN"))
-            if folded != cleaned {
+            let folded = searchKeyword.folding(options: .diacriticInsensitive, locale: Locale(identifier: "vi-VN"))
+            if folded != searchKeyword && !folded.isEmpty {
                 networkResults = await executeNetworkSearch(query: folded)
             }
         }
@@ -99,20 +125,13 @@ public final class LyricSearchService: ObservableObject {
             }
         }
         
-        // Prioritize results that have synced LRC timestamps
-        let sorted = combined.sorted { lhs, rhs in
-            if lhs.hasSyncedLyrics != rhs.hasSyncedLyrics {
-                return lhs.hasSyncedLyrics && !rhs.hasSyncedLyrics
-            }
-            return false
-        }
-        
-        self.searchResults = sorted
+        let finalResults = combined.isEmpty ? OfflineLyricsStore.catalog : combined
+        self.searchResults = finalResults
         self.isSearching = false
-        return sorted
+        return finalResults
     }
     
-    /// Low-level HTTP call to LRCLIB API
+    /// Low-level HTTP call to LRCLIB API with 3.5s timeout
     private func executeNetworkSearch(query: String) async -> [LyricSearchResult] {
         guard let encoded = query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
               let url = URL(string: "https://lrclib.net/api/search?q=\(encoded)") else {
@@ -121,7 +140,7 @@ public final class LyricSearchService: ObservableObject {
         
         do {
             var request = URLRequest(url: url)
-            request.timeoutInterval = 8.0
+            request.timeoutInterval = 3.5
             request.setValue("ProCam-AudioEditor/1.0 (https://procam.app)", forHTTPHeaderField: "User-Agent")
             
             let (data, response) = try await URLSession.shared.data(for: request)
@@ -149,7 +168,7 @@ public final class LyricSearchService: ObservableObject {
         str = str.replacingOccurrences(of: "_", with: " ")
         
         // Remove common Vietnamese & English song prefixes that prevent exact title matching
-        let prefixPattern = "^(lời\\s*bài\\s*hát|loi\\s*bai\\s*hat|bài\\s*hát|bai\\s*hat|nhạc|nhac|ca\\s*khúc|ca\\s*khuc|bài|bai|lyrics?\\s+of|lyrics?|song)\\s+"
+        let prefixPattern = "^(tìm\\s*kiếm|tim\\s*kiem|tìm\\s*lời\\s*bài\\s*hát|tim\\s*loi\\s*bai\\s*hat|tìm\\s*bài\\s*hát|tim\\s*bai\\s*hat|tìm|tim|lời\\s*bài\\s*hát|loi\\s*bai\\s*hat|bài\\s*hát|bai\\s*hat|nhạc|nhac|ca\\s*khúc|ca\\s*khuc|bài|bai|lyrics?\\s+of|lyrics?|song)\\s+"
         str = str.replacingOccurrences(of: prefixPattern, with: "", options: [.regularExpression, .caseInsensitive])
         
         return str.trimmingCharacters(in: .whitespacesAndNewlines)

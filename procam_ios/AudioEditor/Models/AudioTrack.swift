@@ -84,10 +84,31 @@ public struct AudioTrack: Identifiable, Codable, Hashable {
         return samples
     }
     
-    /// Sample demo recording matching the screenshot "Ghi âm 1"
-    public static var demoTrack: AudioTrack {
+    /// Pre-loaded full track: "Xương Rồng - Dangrangto" with 236s duration and full synced LRC lyrics
+    public static var xuongRongTrack: AudioTrack {
+        let url = AudioFileManager.shared.exportsDirectory.appendingPathComponent("Xương Rồng - Dangrangto.m4a")
+        let lrc = OfflineLyricsStore.xuongRongDangrangtoLRC
+        return AudioTrack(
+            id: UUID(uuidString: "88888888-8888-8888-8888-888888888888") ?? UUID(),
+            title: "Xương Rồng - Dangrangto",
+            fileURL: url,
+            duration: 236.0,
+            format: .m4a,
+            sampleRate: 44100,
+            bitrateKbps: 256,
+            fileSizeBytes: 7_550_000,
+            createdAt: Date(),
+            waveformSamples: placeholderSamples(count: 65),
+            transcript: lrc,
+            lyricLines: LyricParser.parse(text: lrc, duration: 236.0)
+        )
+    }
+    
+    /// Sample demo recording matching "Ghi âm 1"
+    public static var recordingDemoTrack: AudioTrack {
         let demoUrl = AudioFileManager.shared.exportsDirectory.appendingPathComponent("Ghi âm 1.m4a")
         return AudioTrack(
+            id: UUID(uuidString: "00000000-0000-0000-0000-000000000001") ?? UUID(),
             title: "Ghi âm 1",
             fileURL: demoUrl,
             duration: 21.0,
@@ -100,5 +121,10 @@ public struct AudioTrack: Identifiable, Codable, Hashable {
             transcript: LyricParser.demoLRC,
             lyricLines: LyricParser.parse(text: LyricParser.demoLRC, duration: 21.0)
         )
+    }
+    
+    /// Primary default track loaded on app launch
+    public static var demoTrack: AudioTrack {
+        return xuongRongTrack
     }
 }

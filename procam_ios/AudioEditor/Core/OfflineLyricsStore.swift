@@ -156,21 +156,71 @@ public struct OfflineLyricsStore {
         )
     ]
     
-    /// Instant matching ignoring accents, case, and song prefixes
+    /// Normalizes text for search by stripping diacritics, replacing đ/Đ with d, lowercasing, and removing punctuation
+    public static func normalizeForSearch(_ str: String) -> String {
+        var result = str.replacingOccurrences(of: "đ", with: "d")
+                        .replacingOccurrences(of: "Đ", with: "d")
+        result = result.folding(options: .diacriticInsensitive, locale: Locale(identifier: "vi-VN"))
+                       .lowercased()
+        // Replace non-alphanumeric characters with spaces
+        result = result.replacingOccurrences(of: "[^a-z0-9\\s]", with: " ", options: .regularExpression)
+        // Collapse multiple spaces
+        result = result.replacingOccurrences(of: "\\s+", with: " ", options: .regularExpression)
+        return result.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+    
+    /// Instant intelligent matching ignoring accents, case, punctuation, and song search prefixes
     public static func search(query: String) -> [LyricSearchResult] {
-        let clean = query
-            .folding(options: .diacriticInsensitive, locale: Locale(identifier: "vi-VN"))
-            .lowercased()
-            .trimmingCharacters(in: .whitespacesAndNewlines)
+        let normQuery = normalizeForSearch(query)
+        guard !normQuery.isEmpty else { return catalog }
         
-        guard !clean.isEmpty else { return catalog }
+        let stopWords = Set(["bai", "hat", "loi", "tim", "kiem", "nhac", "ca", "khuc", "lyrics", "lyric", "song", "cua", "cho", "xin", "ve"])
+        let tokens = normQuery.components(separatedBy: " ").filter { $0.count >= 2 && !stopWords.contains($0) }
         
-        return catalog.filter { item in
-            let titleNorm = item.trackName.folding(options: .diacriticInsensitive, locale: Locale(identifier: "vi-VN")).lowercased()
-            let artistNorm = item.artistName.folding(options: .diacriticInsensitive, locale: Locale(identifier: "vi-VN")).lowercased()
+        let matched = catalog.filter { item in
+            let titleNorm = normalizeForSearch(item.trackName)
+            let artistNorm = normalizeForSearch(item.artistName)
+            let fullNorm = "\(titleNorm) \(artistNorm)"
             
-            return titleNorm.contains(clean) || clean.contains(titleNorm) ||
-                   artistNorm.contains(clean) || clean.contains(artistNorm)
+            // 1. Direct contains check
+            if fullNorm.contains(normQuery) || normQuery.contains(titleNorm) {
+                return true
+            }
+            
+            // 2. Special case for "Xương Rồng"
+            if (normQuery.contains("xuong") && normQuery.contains("rong")) ||
+               (tokens.contains("xuong") && tokens.contains("rong")) {
+                if titleNorm.contains("xuong") && titleNorm.contains("rong") {
+                    return true
+                }
+            }
+            
+            // 3. All non-stopword tokens match
+            if !tokens.isEmpty && tokens.allSatisfy({ fullNorm.contains($0) }) {
+                return true
+            }
+            
+            // 4. Any substantial token (>= 4 characters) matches title
+            if tokens.contains(where: { $0.count >= 4 && titleNorm.contains($0) }) {
+                return true
+            }
+            
+            return false
         }
+        
+        if !matched.isEmpty {
+            // Sort: items matching title directly come first
+            return matched.sorted { a, b in
+                let aTitle = normalizeForSearch(a.trackName)
+                let bTitle = normalizeForSearch(b.trackName)
+                let aExact = normQuery.contains(aTitle) || aTitle.contains(normQuery)
+                let bExact = normQuery.contains(bTitle) || bTitle.contains(normQuery)
+                if aExact != bExact { return aExact && !bExact }
+                return a.hasSyncedLyrics && !b.hasSyncedLyrics
+            }
+        }
+        
+        // Fallback: If no match found, return entire catalog (with Xương Rồng at top) as recommendations
+        return catalog
     }
 }

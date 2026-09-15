@@ -33,8 +33,12 @@ public struct AudioLyricsSyncedView: View {
         self.onUpdateLyrics = onUpdateLyrics
     }
     
+    private var effectiveTrack: AudioTrack {
+        playerManager.currentTrack ?? track
+    }
+    
     private var lyrics: [LyricLine] {
-        track.lyrics
+        effectiveTrack.lyrics
     }
     
     private var activeIndex: Int? {
@@ -64,8 +68,8 @@ public struct AudioLyricsSyncedView: View {
         )
         .sheet(isPresented: $showEditSheet) {
             LyricsEditSheet(
-                initialText: track.transcript ?? LyricParser.exportToLRC(lines: lyrics),
-                duration: track.duration,
+                initialText: effectiveTrack.transcript ?? LyricParser.exportToLRC(lines: lyrics),
+                duration: effectiveTrack.duration,
                 onSave: { newText in
                     onUpdateLyrics?(newText)
                 }
@@ -73,8 +77,8 @@ public struct AudioLyricsSyncedView: View {
         }
         .sheet(isPresented: $showSearchSheet) {
             LyricSearchSheet(
-                initialQuery: track.title,
-                duration: track.duration,
+                initialQuery: effectiveTrack.title,
+                duration: effectiveTrack.duration,
                 onApplyLyrics: { newLRC in
                     onUpdateLyrics?(newLRC)
                 }
@@ -87,7 +91,7 @@ public struct AudioLyricsSyncedView: View {
         }
         .onAppear {
             if lyrics.isEmpty {
-                let lower = track.title.folding(options: .diacriticInsensitive, locale: Locale(identifier: "vi-VN")).lowercased()
+                let lower = effectiveTrack.title.folding(options: .diacriticInsensitive, locale: Locale(identifier: "vi-VN")).lowercased()
                 if lower.contains("xuong rong") {
                     onUpdateLyrics?(OfflineLyricsStore.xuongRongDangrangtoLRC)
                 }
@@ -147,15 +151,20 @@ public struct AudioLyricsSyncedView: View {
             .padding(.vertical, 2)
             .background(Capsule().fill(Color(UIColor.systemBackground).opacity(0.6)))
             
-            // Search Online Lyrics Button
+            // Search Lyrics Button
             Button(action: {
                 showSearchSheet = true
             }) {
-                Image(systemName: "magnifyingglass")
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundColor(AudioEditorTheme.accentRed)
-                    .padding(5)
-                    .background(Circle().fill(Color(UIColor.systemBackground).opacity(0.6)))
+                HStack(spacing: 4) {
+                    Image(systemName: "magnifyingglass")
+                        .font(.system(size: 11, weight: .bold))
+                    Text("Tìm lời")
+                        .font(.system(size: 11, weight: .bold))
+                }
+                .foregroundColor(AudioEditorTheme.accentRed)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 4)
+                .background(Capsule().fill(Color(UIColor.systemBackground).opacity(0.8)))
             }
             
             // Edit LRC Button
@@ -171,7 +180,7 @@ public struct AudioLyricsSyncedView: View {
             
             // Copy LRC Button
             Button(action: {
-                let lrcContent = track.transcript ?? LyricParser.exportToLRC(lines: lyrics)
+                let lrcContent = effectiveTrack.transcript ?? LyricParser.exportToLRC(lines: lyrics)
                 UIPasteboard.general.string = lrcContent
                 UIImpactFeedbackGenerator(style: .light).impactOccurred()
                 withAnimation { copiedToast = true }

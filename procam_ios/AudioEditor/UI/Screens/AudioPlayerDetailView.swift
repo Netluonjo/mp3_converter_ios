@@ -52,14 +52,60 @@ public struct AudioPlayerDetailView: View {
             
             // MARK: - Center Content (Waveform or Synchronized Lyrics)
             if selectedTab == 0 {
-                AudioWaveformVisualizer(
-                    samples: currentTrack.waveformSamples,
-                    progress: playerManager.progress,
-                    onSeek: { newProgress in
-                        playerManager.seekToProgress(newProgress)
+                VStack(spacing: 14) {
+                    AudioWaveformVisualizer(
+                        samples: currentTrack.waveformSamples,
+                        progress: playerManager.progress,
+                        onSeek: { newProgress in
+                            playerManager.seekToProgress(newProgress)
+                        }
+                    )
+                    
+                    // Live floating karaoke subtitle pill below waveform
+                    Button(action: {
+                        withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+                            selectedTab = 1
+                        }
+                    }) {
+                        HStack(spacing: 8) {
+                            Image(systemName: "music.mic")
+                                .font(.system(size: 13, weight: .bold))
+                                .foregroundColor(AudioEditorTheme.accentRed)
+                            
+                            let lines = currentTrack.lyrics
+                            if let activeIndex = playerManager.currentLyricIndex(for: lines),
+                               activeIndex < lines.count {
+                                Text(lines[activeIndex].text)
+                                    .font(.system(size: 14, weight: .bold))
+                                    .foregroundColor(Color(UIColor.label))
+                                    .lineLimit(1)
+                            } else {
+                                Text(lines.isEmpty ? "Nhấn để tìm & đồng bộ lời bài hát" : "Chạm để mở toàn bộ lời bài hát")
+                                    .font(.system(size: 13, weight: .medium))
+                                    .foregroundColor(.secondary)
+                            }
+                            
+                            Spacer()
+                            
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 11, weight: .semibold))
+                                .foregroundColor(Color(UIColor.tertiaryLabel))
+                        }
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 10)
+                        .background(
+                            Capsule()
+                                .fill(Color(UIColor.secondarySystemBackground))
+                                .overlay(
+                                    Capsule()
+                                        .stroke(AudioEditorTheme.accentRed.opacity(0.3), lineWidth: 1)
+                                )
+                        )
+                        .padding(.horizontal, 20)
                     }
-                )
-                .padding(.vertical, 20)
+                    .buttonStyle(.plain)
+                }
+                .padding(.vertical, 12)
             } else {
                 AudioLyricsSyncedView(
                     playerManager: playerManager,
@@ -70,7 +116,7 @@ public struct AudioPlayerDetailView: View {
                     }
                 )
                 .padding(.horizontal, 20)
-                .frame(height: 230)
+                .frame(minHeight: 250, maxHeight: 310)
             }
             
             Spacer()

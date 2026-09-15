@@ -38,10 +38,14 @@ public struct LyricSearchSheet: View {
             .replacingOccurrences(of: "_", with: " ")
             .trimmingCharacters(in: .whitespacesAndNewlines)
         
-        // If the title is a generic recording name, don't pre-populate to avoid searching "Ghi âm 1"
-        let lower = clean.lowercased()
-        let isGeneric = lower.contains("ghi âm") || lower.contains("recording") || lower.contains("export") || lower.contains("audio") || lower.contains("track")
-        self._query = State(initialValue: isGeneric ? "" : clean)
+        let lower = clean.folding(options: .diacriticInsensitive, locale: Locale(identifier: "vi-VN")).lowercased()
+        if lower.contains("xuong rong") {
+            self._query = State(initialValue: "Xương Rồng")
+        } else if lower.contains("ghi am") || lower.contains("recording") || lower.contains("export") || lower.contains("audio") || lower.contains("track") {
+            self._query = State(initialValue: "")
+        } else {
+            self._query = State(initialValue: clean)
+        }
     }
     
     public var body: some View {
@@ -58,14 +62,12 @@ public struct LyricSearchSheet: View {
                 Divider()
                 
                 // MARK: - Content
-                if searchService.isSearching {
+                if searchService.isSearching && searchService.searchResults.isEmpty {
                     loadingView
-                } else if let error = searchService.errorMessage {
+                } else if let error = searchService.errorMessage, searchService.searchResults.isEmpty {
                     errorView(error)
                 } else if searchService.searchResults.isEmpty && searchService.hasAttemptedSearch && !query.isEmpty {
                     noResultsView
-                } else if searchService.searchResults.isEmpty {
-                    initialPromptView
                 } else {
                     resultsListView
                 }
@@ -78,8 +80,12 @@ public struct LyricSearchSheet: View {
                 }
             }
             .task {
-                if !query.isEmpty && searchService.searchResults.isEmpty {
-                    _ = await searchService.search(query: query)
+                if searchService.searchResults.isEmpty {
+                    if query.isEmpty {
+                        searchService.searchResults = OfflineLyricsStore.catalog
+                    } else {
+                        _ = await searchService.search(query: query)
+                    }
                 }
             }
             .sheet(item: $selectedResult) { item in
@@ -106,7 +112,16 @@ public struct LyricSearchSheet: View {
                         performSearchImmediate()
                     }
                     .onChange(of: query) { newQuery in
-                        debounceSearch(newQuery)
+                        let trimmed = newQuery.trimmingCharacters(in: .whitespacesAndNewlines)
+                        if trimmed.isEmpty {
+                            searchService.searchResults = OfflineLyricsStore.catalog
+                        } else {
+                            let instantMatches = OfflineLyricsStore.search(query: trimmed)
+                            if !instantMatches.isEmpty {
+                                searchService.searchResults = instantMatches
+                            }
+                            debounceSearch(newQuery)
+                        }
                     }
                 
                 if !query.isEmpty {
@@ -211,6 +226,22 @@ public struct LyricSearchSheet: View {
                                     .font(.system(size: 11, design: .monospaced))
                                     .foregroundColor(.secondary)
                             }
+                            
+                            Button(action: {
+                                if let lyrics = item.resolvedLyrics {
+                                    UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                                    onApplyLyrics(lyrics)
+                                    dismiss()
+                                }
+                            }) {
+                                Text("Áp dụng")
+                                    .font(.system(size: 11, weight: .bold))
+                                    .foregroundColor(.white)
+                                    .padding(.horizontal, 10)
+                                    .padding(.vertical, 6)
+                                    .background(Capsule().fill(AudioEditorTheme.accentRed))
+                            }
+                            .buttonStyle(.plain)
                             
                             Image(systemName: "chevron.right")
                                 .font(.system(size: 12, weight: .semibold))

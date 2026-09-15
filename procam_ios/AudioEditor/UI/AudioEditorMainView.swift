@@ -56,7 +56,10 @@ public struct AudioEditorMainView: View {
         }
         .tint(AudioEditorTheme.accentRed)
         .onAppear {
-            if let first = fileManager.savedTracks.first {
+            fileManager.ensureDemoAudioExists()
+            if let xuongRong = fileManager.savedTracks.first(where: { $0.title.lowercased().contains("xuong rong") }) {
+                playerManager.loadTrack(xuongRong)
+            } else if let first = fileManager.savedTracks.first {
                 playerManager.loadTrack(first)
             } else {
                 playerManager.loadTrack(AudioTrack.demoTrack)

@@ -68,6 +68,8 @@ public final class AudioFileManager: ObservableObject {
             } else if fileManager.fileExists(atPath: txtURL.path),
                       let content = try? String(contentsOf: txtURL, encoding: .utf8) {
                 loadedTranscript = content
+            } else if title.lowercased().contains("xuong rong") {
+                loadedTranscript = OfflineLyricsStore.xuongRongDangrangtoLRC
             } else if title == "Ghi âm 1" {
                 loadedTranscript = LyricParser.demoLRC
             }
@@ -88,7 +90,12 @@ public final class AudioFileManager: ObservableObject {
             tracks.append(track)
         }
         
-        tracks.sort { $0.createdAt > $1.createdAt }
+        tracks.sort { a, b in
+            let aIsXuongRong = a.title.lowercased().contains("xuong rong")
+            let bIsXuongRong = b.title.lowercased().contains("xuong rong")
+            if aIsXuongRong != bIsXuongRong { return aIsXuongRong && !bIsXuongRong }
+            return a.createdAt > b.createdAt
+        }
         savedTracks = tracks
     }
     
@@ -118,18 +125,22 @@ public final class AudioFileManager: ObservableObject {
     
     /// Renames a track and its associated lyrics sidecar file
     public func renameTrack(_ track: AudioTrack, newName: String) -> AudioTrack? {
-        let newURL = destinationURL(baseName: newName, format: track.format)
+        let trimmed = newName.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return nil }
+        
+        let folder = track.fileURL.deletingLastPathComponent()
+        let newAudioURL = folder.appendingPathComponent("\(trimmed).\(track.format.fileExtension)")
         let oldLrcURL = track.fileURL.deletingPathExtension().appendingPathExtension("lrc")
-        let newLrcURL = newURL.deletingPathExtension().appendingPathExtension("lrc")
+        let newLrcURL = folder.appendingPathComponent("\(trimmed).lrc")
+        
         do {
-            try fileManager.moveItem(at: track.fileURL, to: newURL)
+            try fileManager.moveItem(at: track.fileURL, to: newAudioURL)
             if fileManager.fileExists(atPath: oldLrcURL.path) {
                 try? fileManager.moveItem(at: oldLrcURL, to: newLrcURL)
             }
             reloadLibrary()
-            return savedTracks.first { $0.fileURL == newURL }
+            return savedTracks.first(where: { $0.title == trimmed })
         } catch {
-            print("Failed to rename track: \(error)")
             return nil
         }
     }
@@ -150,17 +161,26 @@ public final class AudioFileManager: ObservableObject {
         return updatedTrack
     }
     
-    /// Generates a synthesized demo audio file on disk so the user immediately has sound
+    /// Generates pre-loaded audio files on disk so the user immediately has sound and synced lyrics
     public func ensureDemoAudioExists() {
+        let xuongRongURL = exportsDirectory.appendingPathComponent("Xương Rồng - Dangrangto.m4a")
+        let xuongRongLrcURL = exportsDirectory.appendingPathComponent("Xương Rồng - Dangrangto.lrc")
+        if !fileManager.fileExists(atPath: xuongRongLrcURL.path) {
+            try? OfflineLyricsStore.xuongRongDangrangtoLRC.write(to: xuongRongLrcURL, atomically: true, encoding: .utf8)
+        }
+        if !fileManager.fileExists(atPath: xuongRongURL.path) {
+            generateSyntheticAudioFile(outputURL: xuongRongURL, durationSeconds: 236.0)
+        }
+        
         let demoURL = exportsDirectory.appendingPathComponent("Ghi âm 1.m4a")
         let demoLrcURL = exportsDirectory.appendingPathComponent("Ghi âm 1.lrc")
         if !fileManager.fileExists(atPath: demoLrcURL.path) {
             try? LyricParser.demoLRC.write(to: demoLrcURL, atomically: true, encoding: .utf8)
         }
-        guard !fileManager.fileExists(atPath: demoURL.path) else { return }
+        if !fileManager.fileExists(atPath: demoURL.path) {
+            generateSyntheticAudioFile(outputURL: demoURL, durationSeconds: 21.0)
+        }
         
-        // Synthesize a gentle 440Hz warm chime tone for 21 seconds
-        generateSyntheticAudioFile(outputURL: demoURL, durationSeconds: 21.0)
         reloadLibrary()
     }
     
