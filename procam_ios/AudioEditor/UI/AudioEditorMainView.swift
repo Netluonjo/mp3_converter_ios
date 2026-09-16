@@ -40,19 +40,15 @@ public struct AudioEditorMainView: View {
                 playerManager: playerManager,
                 onSelectTrack: { track in
                     selectedTab = 0 // Switch to Studio to play
+                },
+                onNavigateToWifiTransfer: {
+                    selectedTab = 1 // Navigate to Tools tab
                 }
             )
             .tabItem {
                 Label("Thư viện", systemImage: "music.note.list")
             }
             .tag(2)
-            
-            // Tab 4: Settings & Guidelines
-            AudioSettingsView()
-                .tabItem {
-                    Label("Cài đặt", systemImage: "gearshape.fill")
-                }
-                .tag(3)
         }
         .tint(AudioEditorTheme.accentRed)
         .onAppear {

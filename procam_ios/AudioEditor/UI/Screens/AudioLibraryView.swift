@@ -1,23 +1,29 @@
 import SwiftUI
+import UniformTypeIdentifiers
 
 /// Document manager and library browser for all converted, recorded, and trimmed audio files
 public struct AudioLibraryView: View {
     @ObservedObject public var fileManager: AudioFileManager
     @ObservedObject public var playerManager: AudioPlayerManager
     public let onSelectTrack: (AudioTrack) -> Void
+    public var onNavigateToWifiTransfer: (() -> Void)? = nil
     
     @State private var shareURL: URL? = nil
     @State private var showShareSheet: Bool = false
     @State private var showRingtoneGuide: Bool = false
+    @State private var showFileImporter: Bool = false
+    @State private var showWifiTransferSheet: Bool = false
     
     public init(
         fileManager: AudioFileManager = .shared,
         playerManager: AudioPlayerManager,
-        onSelectTrack: @escaping (AudioTrack) -> Void
+        onSelectTrack: @escaping (AudioTrack) -> Void,
+        onNavigateToWifiTransfer: (() -> Void)? = nil
     ) {
         self.fileManager = fileManager
         self.playerManager = playerManager
         self.onSelectTrack = onSelectTrack
+        self.onNavigateToWifiTransfer = onNavigateToWifiTransfer
     }
     
     public var body: some View {
@@ -29,13 +35,55 @@ public struct AudioLibraryView: View {
                     libraryListView
                 }
             }
-            .navigationTitle("Tệp của tôi (Library)")
+            .navigationTitle("Thư viện bài hát")
             .toolbar {
-                ToolbarItem(placement: .primaryAction) {
-                    Button(action: { showRingtoneGuide = true }) {
-                        Label("Cài nhạc chuông", systemImage: "bell.badge")
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button(action: { showFileImporter = true }) {
+                        HStack(spacing: 4) {
+                            Image(systemName: "plus.circle.fill")
+                            Text("Thêm nhạc từ máy")
+                                .font(.system(size: 13, weight: .semibold))
+                        }
+                        .foregroundColor(AudioEditorTheme.accentRed)
                     }
                 }
+                
+                ToolbarItemGroup(placement: .primaryAction) {
+                    Button(action: { showWifiTransferSheet = true }) {
+                        Image(systemName: "wifi")
+                            .foregroundColor(Color(red: 0.0, green: 0.74, blue: 0.83))
+                    }
+                    
+                    Button(action: { fileManager.reloadLibrary() }) {
+                        Image(systemName: "arrow.clockwise")
+                            .foregroundColor(AudioEditorTheme.accentRed)
+                    }
+                    
+                    Button(action: { showRingtoneGuide = true }) {
+                        Image(systemName: "bell.badge")
+                            .foregroundColor(.secondary)
+                    }
+                }
+            }
+            .fileImporter(
+                isPresented: $showFileImporter,
+                allowedContentTypes: [.audio],
+                allowsMultipleSelection: true
+            ) { result in
+                switch result {
+                case .success(let urls):
+                    for url in urls {
+                        if let imported = fileManager.importAudioFile(from: url) {
+                            playerManager.loadTrack(imported)
+                            onSelectTrack(imported)
+                        }
+                    }
+                case .failure:
+                    break
+                }
+            }
+            .sheet(isPresented: $showWifiTransferSheet) {
+                WifiTransferView(fileManager: fileManager, onBack: { showWifiTransferSheet = false })
             }
             .sheet(isPresented: $showShareSheet) {
                 if let url = shareURL {

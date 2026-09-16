@@ -30,6 +30,8 @@
 	<string>Ứng dụng lưu ảnh và tệp âm thanh trực tiếp vào thư viện của bạn.</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>Ứng dụng cần quyền nhận diện giọng nói để tự động trích xuất lời thoại từ âm thanh.</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Ứng dụng cần quyền mạng cục bộ để truyền file nhạc giữa máy tính và điện thoại qua Wi-Fi.</string>
 	<key>UIFileSharingEnabled</key>
 	<true/>
 	<key>LSSupportsOpeningDocumentsInPlace</key>

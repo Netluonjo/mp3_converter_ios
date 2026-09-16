@@ -37,6 +37,10 @@
 		AA00021B2C1234560000021B /* SpeechRecognitionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00011B2C1234560000011B /* SpeechRecognitionService.swift */; };
 		AA00021C2C1234560000021C /* LyricSearchSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00011C2C1234560000011C /* LyricSearchSheet.swift */; };
 		AA00021D2C1234560000021D /* OfflineLyricsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00011D2C1234560000011D /* OfflineLyricsStore.swift */; };
+		AA00021E2C1234560000021E /* WifiHttpServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00011E2C1234560000011E /* WifiHttpServer.swift */; };
+		AA00021F2C1234560000021F /* WifiTransferManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00011F2C1234560000011F /* WifiTransferManager.swift */; };
+		AA0002202C12345600000220 /* WifiTransferView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001202C12345600000120 /* WifiTransferView.swift */; };
+		AA0002212C12345600000221 /* web_transfer.html in Resources */ = {isa = PBXBuildFile; fileRef = AA0001212C12345600000121 /* web_transfer.html */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -72,6 +76,10 @@
 		AA00011B2C1234560000011B /* SpeechRecognitionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechRecognitionService.swift; sourceTree = "<group>"; };
 		AA00011C2C1234560000011C /* LyricSearchSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LyricSearchSheet.swift; sourceTree = "<group>"; };
 		AA00011D2C1234560000011D /* OfflineLyricsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineLyricsStore.swift; sourceTree = "<group>"; };
+		AA00011E2C1234560000011E /* WifiHttpServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WifiHttpServer.swift; sourceTree = "<group>"; };
+		AA00011F2C1234560000011F /* WifiTransferManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WifiTransferManager.swift; sourceTree = "<group>"; };
+		AA0001202C12345600000120 /* WifiTransferView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WifiTransferView.swift; sourceTree = "<group>"; };
+		AA0001212C12345600000121 /* web_transfer.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = web_transfer.html; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,6 +107,7 @@
 				AA0000102C12345600000010 /* ProCamApp.swift */,
 				AA0001012C12345600000101 /* AppRootView.swift */,
 				AA0000122C12345600000012 /* Info.plist */,
+				AA0001212C12345600000121 /* web_transfer.html */,
 				AA0003002C12345600000300 /* AudioEditor */,
 				AA0000302C12345600000030 /* Core */,
 				AA0000312C12345600000031 /* UI */,
@@ -138,6 +147,8 @@
 				AA00011A2C1234560000011A /* LyricSearchService.swift */,
 				AA00011B2C1234560000011B /* SpeechRecognitionService.swift */,
 				AA00011D2C1234560000011D /* OfflineLyricsStore.swift */,
+				AA00011E2C1234560000011E /* WifiHttpServer.swift */,
+				AA00011F2C1234560000011F /* WifiTransferManager.swift */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -185,6 +196,7 @@
 				AA0001152C12345600000115 /* AudioLibraryView.swift */,
 				AA0001162C12345600000116 /* AudioToolsGridView.swift */,
 				AA00011C2C1234560000011C /* LyricSearchSheet.swift */,
+				AA0001202C12345600000120 /* WifiTransferView.swift */,
 			);
 			path = Screens;
 			sourceTree = "<group>";
@@ -304,6 +316,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AA0002212C12345600000221 /* web_transfer.html in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -344,6 +357,9 @@
 				AA00021B2C1234560000021B /* SpeechRecognitionService.swift in Sources */,
 				AA00021C2C1234560000021C /* LyricSearchSheet.swift in Sources */,
 				AA00021D2C1234560000021D /* OfflineLyricsStore.swift in Sources */,
+				AA00021E2C1234560000021E /* WifiHttpServer.swift in Sources */,
+				AA00021F2C1234560000021F /* WifiTransferManager.swift in Sources */,
+				AA0002202C12345600000220 /* WifiTransferView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

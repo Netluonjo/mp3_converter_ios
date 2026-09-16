@@ -133,6 +133,30 @@ public final class AudioFileManager: ObservableObject {
         reloadLibrary()
     }
     
+    /// Imports an external audio file (from Files / iCloud) into the app library
+    @discardableResult
+    public func importAudioFile(from sourceURL: URL) -> AudioTrack? {
+        let isSecurityScoped = sourceURL.startAccessingSecurityScopedResource()
+        defer {
+            if isSecurityScoped { sourceURL.stopAccessingSecurityScopedResource() }
+        }
+        
+        let filename = sourceURL.lastPathComponent
+        let targetURL = exportsDirectory.appendingPathComponent(filename)
+        
+        do {
+            if fileManager.fileExists(atPath: targetURL.path) {
+                try fileManager.removeItem(at: targetURL)
+            }
+            try fileManager.copyItem(at: sourceURL, to: targetURL)
+            reloadLibrary()
+            let title = targetURL.deletingPathExtension().lastPathComponent
+            return savedTracks.first(where: { $0.title == title })
+        } catch {
+            return nil
+        }
+    }
+    
     /// Renames a track and its associated lyrics sidecar file
     public func renameTrack(_ track: AudioTrack, newName: String) -> AudioTrack? {
         let trimmed = newName.trimmingCharacters(in: .whitespacesAndNewlines)
