@@ -232,7 +232,7 @@ public final class AudioFileManager: ObservableObject {
             AVLinearPCMBitDepthKey: 16,
             AVLinearPCMIsFloatKey: false,
             AVLinearPCMIsBigEndianKey: false,
-            AVLinearPCMIsNonInterleavedKey: false
+            AVLinearPCMIsNonInterleaved: false
         ]
         
         guard let audioFile = try? AVAudioFile(forWriting: outputURL, settings: settings) else {

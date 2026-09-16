@@ -65,7 +65,7 @@ public struct LyricSearchSheet: View {
                 if searchService.isSearching && searchService.searchResults.isEmpty {
                     loadingView
                 } else if let error = searchService.errorMessage, searchService.searchResults.isEmpty {
-                    errorView(error)
+                    errorView(message: error)
                 } else if searchService.searchResults.isEmpty && searchService.hasAttemptedSearch && !query.isEmpty {
                     noResultsView
                 } else {
@@ -321,7 +321,7 @@ public struct LyricSearchSheet: View {
         }
     }
     
-    private var errorView: some View {
+    private func errorView(message: String) -> some View {
         VStack(spacing: 12) {
             Spacer()
             Image(systemName: "wifi.exclamationmark")
@@ -329,7 +329,7 @@ public struct LyricSearchSheet: View {
                 .foregroundColor(.orange)
             Text("Không thể kết nối máy chủ")
                 .font(.system(size: 16, weight: .bold))
-            Text(error)
+            Text(message)
                 .font(.system(size: 13))
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)

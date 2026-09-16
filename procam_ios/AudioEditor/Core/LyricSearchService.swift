@@ -46,6 +46,17 @@ public struct LyricSearchResult: Identifiable, Codable, Hashable {
         self.plainLyrics = try container.decodeIfPresent(String.self, forKey: .plainLyrics)
     }
     
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(id, forKey: .id)
+        try container.encode(trackName, forKey: .trackName)
+        try container.encode(artistName, forKey: .artistName)
+        try container.encodeIfPresent(albumName, forKey: .albumName)
+        try container.encodeIfPresent(duration, forKey: .duration)
+        try container.encodeIfPresent(syncedLyrics, forKey: .syncedLyrics)
+        try container.encodeIfPresent(plainLyrics, forKey: .plainLyrics)
+    }
+    
     public var hasSyncedLyrics: Bool {
         guard let synced = syncedLyrics else { return false }
         return !synced.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
