@@ -1,0 +1,501 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		AA0000112C12345600000011 /* ProCamApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000102C12345600000010 /* ProCamApp.swift */; };
+
+		AA0002022C12345600000202 /* AudioTrack.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001022C12345600000102 /* AudioTrack.swift */; };
+		AA0002032C12345600000203 /* AudioExportConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001032C12345600000103 /* AudioExportConfig.swift */; };
+		AA0002042C12345600000204 /* AudioToolType.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001042C12345600000104 /* AudioToolType.swift */; };
+		AA0002052C12345600000205 /* AudioProcessingEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001052C12345600000105 /* AudioProcessingEngine.swift */; };
+		AA0002062C12345600000206 /* FFmpegCommandBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001062C12345600000106 /* FFmpegCommandBridge.swift */; };
+		AA0002072C12345600000207 /* WaveformExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001072C12345600000107 /* WaveformExtractor.swift */; };
+		AA0002082C12345600000208 /* AudioPlayerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001082C12345600000108 /* AudioPlayerManager.swift */; };
+		AA0002092C12345600000209 /* AudioFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001092C12345600000109 /* AudioFileManager.swift */; };
+		AA00020A2C1234560000020A /* AudioEditorTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00010A2C1234560000010A /* AudioEditorTheme.swift */; };
+		AA00020B2C1234560000020B /* AudioWaveformVisualizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00010B2C1234560000010B /* AudioWaveformVisualizer.swift */; };
+		AA00020C2C1234560000020C /* WaveformTrimmerOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00010C2C1234560000010C /* WaveformTrimmerOverlay.swift */; };
+		AA00020D2C1234560000020D /* AudioScrubberBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00010D2C1234560000010D /* AudioScrubberBar.swift */; };
+		AA00020E2C1234560000020E /* AudioControlButtonsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00010E2C1234560000010E /* AudioControlButtonsView.swift */; };
+		AA00020F2C1234560000020F /* AudioPlayerDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00010F2C1234560000010F /* AudioPlayerDetailView.swift */; };
+		AA0002102C12345600000210 /* AudioTrimmerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001102C12345600000110 /* AudioTrimmerSheet.swift */; };
+		AA0002112C12345600000211 /* VideoToAudioView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001112C12345600000111 /* VideoToAudioView.swift */; };
+		AA0002122C12345600000212 /* AudioMergerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001122C12345600000112 /* AudioMergerView.swift */; };
+		AA0002132C12345600000213 /* AudioEffectsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001132C12345600000113 /* AudioEffectsSheet.swift */; };
+		AA0002142C12345600000214 /* ExportSettingsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001142C12345600000114 /* ExportSettingsSheet.swift */; };
+		AA0002152C12345600000215 /* AudioLibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001152C12345600000115 /* AudioLibraryView.swift */; };
+		AA0002162C12345600000216 /* AudioToolsGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001162C12345600000116 /* AudioToolsGridView.swift */; };
+		AA0002172C12345600000217 /* AudioEditorMainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001172C12345600000117 /* AudioEditorMainView.swift */; };
+		AA0002182C12345600000218 /* LyricLine.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001182C12345600000118 /* LyricLine.swift */; };
+		AA0002192C12345600000219 /* AudioLyricsSyncedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001192C12345600000119 /* AudioLyricsSyncedView.swift */; };
+		AA00021A2C1234560000021A /* LyricSearchService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00011A2C1234560000011A /* LyricSearchService.swift */; };
+		AA00021B2C1234560000021B /* SpeechRecognitionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00011B2C1234560000011B /* SpeechRecognitionService.swift */; };
+		AA00021C2C1234560000021C /* LyricSearchSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00011C2C1234560000011C /* LyricSearchSheet.swift */; };
+		AA00021D2C1234560000021D /* OfflineLyricsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00011D2C1234560000011D /* OfflineLyricsStore.swift */; };
+		AA00021E2C1234560000021E /* WifiHttpServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00011E2C1234560000011E /* WifiHttpServer.swift */; };
+		AA00021F2C1234560000021F /* WifiTransferManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00011F2C1234560000011F /* WifiTransferManager.swift */; };
+		AA0002202C12345600000220 /* WifiTransferView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001202C12345600000120 /* WifiTransferView.swift */; };
+		AA0002212C12345600000221 /* web_transfer.html in Resources */ = {isa = PBXBuildFile; fileRef = AA0001212C12345600000121 /* web_transfer.html */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		AA00000F2C1234560000000F /* procam_ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "procam_ios.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		AA0000102C12345600000010 /* ProCamApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProCamApp.swift; sourceTree = "<group>"; };
+		AA0000122C12345600000012 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+
+		AA0001022C12345600000102 /* AudioTrack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioTrack.swift; sourceTree = "<group>"; };
+		AA0001032C12345600000103 /* AudioExportConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioExportConfig.swift; sourceTree = "<group>"; };
+		AA0001042C12345600000104 /* AudioToolType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioToolType.swift; sourceTree = "<group>"; };
+		AA0001052C12345600000105 /* AudioProcessingEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioProcessingEngine.swift; sourceTree = "<group>"; };
+		AA0001062C12345600000106 /* FFmpegCommandBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FFmpegCommandBridge.swift; sourceTree = "<group>"; };
+		AA0001072C12345600000107 /* WaveformExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaveformExtractor.swift; sourceTree = "<group>"; };
+		AA0001082C12345600000108 /* AudioPlayerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayerManager.swift; sourceTree = "<group>"; };
+		AA0001092C12345600000109 /* AudioFileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioFileManager.swift; sourceTree = "<group>"; };
+		AA00010A2C1234560000010A /* AudioEditorTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioEditorTheme.swift; sourceTree = "<group>"; };
+		AA00010B2C1234560000010B /* AudioWaveformVisualizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioWaveformVisualizer.swift; sourceTree = "<group>"; };
+		AA00010C2C1234560000010C /* WaveformTrimmerOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaveformTrimmerOverlay.swift; sourceTree = "<group>"; };
+		AA00010D2C1234560000010D /* AudioScrubberBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioScrubberBar.swift; sourceTree = "<group>"; };
+		AA00010E2C1234560000010E /* AudioControlButtonsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioControlButtonsView.swift; sourceTree = "<group>"; };
+		AA00010F2C1234560000010F /* AudioPlayerDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayerDetailView.swift; sourceTree = "<group>"; };
+		AA0001102C12345600000110 /* AudioTrimmerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioTrimmerSheet.swift; sourceTree = "<group>"; };
+		AA0001112C12345600000111 /* VideoToAudioView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoToAudioView.swift; sourceTree = "<group>"; };
+		AA0001122C12345600000112 /* AudioMergerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioMergerView.swift; sourceTree = "<group>"; };
+		AA0001132C12345600000113 /* AudioEffectsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioEffectsSheet.swift; sourceTree = "<group>"; };
+		AA0001142C12345600000114 /* ExportSettingsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportSettingsSheet.swift; sourceTree = "<group>"; };
+		AA0001152C12345600000115 /* AudioLibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioLibraryView.swift; sourceTree = "<group>"; };
+		AA0001162C12345600000116 /* AudioToolsGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioToolsGridView.swift; sourceTree = "<group>"; };
+		AA0001172C12345600000117 /* AudioEditorMainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioEditorMainView.swift; sourceTree = "<group>"; };
+		AA0001182C12345600000118 /* LyricLine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LyricLine.swift; sourceTree = "<group>"; };
+		AA0001192C12345600000119 /* AudioLyricsSyncedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioLyricsSyncedView.swift; sourceTree = "<group>"; };
+		AA00011A2C1234560000011A /* LyricSearchService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LyricSearchService.swift; sourceTree = "<group>"; };
+		AA00011B2C1234560000011B /* SpeechRecognitionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechRecognitionService.swift; sourceTree = "<group>"; };
+		AA00011C2C1234560000011C /* LyricSearchSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LyricSearchSheet.swift; sourceTree = "<group>"; };
+		AA00011D2C1234560000011D /* OfflineLyricsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineLyricsStore.swift; sourceTree = "<group>"; };
+		AA00011E2C1234560000011E /* WifiHttpServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WifiHttpServer.swift; sourceTree = "<group>"; };
+		AA00011F2C1234560000011F /* WifiTransferManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WifiTransferManager.swift; sourceTree = "<group>"; };
+		AA0001202C12345600000120 /* WifiTransferView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WifiTransferView.swift; sourceTree = "<group>"; };
+		AA0001212C12345600000121 /* web_transfer.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = web_transfer.html; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		AA00000A2C1234560000000A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		AA00000C2C1234560000000C = {
+			isa = PBXGroup;
+			children = (
+				AA00000D2C1234560000000D /* procam_ios */,
+				AA00000E2C1234560000000E /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		AA00000D2C1234560000000D /* procam_ios */ = {
+			isa = PBXGroup;
+			children = (
+				AA0000102C12345600000010 /* ProCamApp.swift */,
+				AA0001012C12345600000101 /* AppRootView.swift */,
+				AA0000122C12345600000012 /* Info.plist */,
+				AA0001212C12345600000121 /* web_transfer.html */,
+				AA0003002C12345600000300 /* AudioEditor */,
+				AA0000302C12345600000030 /* Core */,
+				AA0000312C12345600000031 /* UI */,
+			);
+			path = procam_ios;
+			sourceTree = "<group>";
+		};
+		AA0003002C12345600000300 /* AudioEditor */ = {
+			isa = PBXGroup;
+			children = (
+				AA0003012C12345600000301 /* Models */,
+				AA0003022C12345600000302 /* Core */,
+				AA0003032C12345600000303 /* UI */,
+			);
+			path = AudioEditor;
+			sourceTree = "<group>";
+		};
+		AA0003012C12345600000301 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				AA0001022C12345600000102 /* AudioTrack.swift */,
+				AA0001032C12345600000103 /* AudioExportConfig.swift */,
+				AA0001042C12345600000104 /* AudioToolType.swift */,
+				AA0001182C12345600000118 /* LyricLine.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		AA0003022C12345600000302 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				AA0001052C12345600000105 /* AudioProcessingEngine.swift */,
+				AA0001062C12345600000106 /* FFmpegCommandBridge.swift */,
+				AA0001072C12345600000107 /* WaveformExtractor.swift */,
+				AA0001082C12345600000108 /* AudioPlayerManager.swift */,
+				AA0001092C12345600000109 /* AudioFileManager.swift */,
+				AA00011A2C1234560000011A /* LyricSearchService.swift */,
+				AA00011B2C1234560000011B /* SpeechRecognitionService.swift */,
+				AA00011D2C1234560000011D /* OfflineLyricsStore.swift */,
+				AA00011E2C1234560000011E /* WifiHttpServer.swift */,
+				AA00011F2C1234560000011F /* WifiTransferManager.swift */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		AA0003032C12345600000303 /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				AA0001172C12345600000117 /* AudioEditorMainView.swift */,
+				AA0003042C12345600000304 /* Theme */,
+				AA0003052C12345600000305 /* Components */,
+				AA0003062C12345600000306 /* Screens */,
+			);
+			path = UI;
+			sourceTree = "<group>";
+		};
+		AA0003042C12345600000304 /* Theme */ = {
+			isa = PBXGroup;
+			children = (
+				AA00010A2C1234560000010A /* AudioEditorTheme.swift */,
+			);
+			path = Theme;
+			sourceTree = "<group>";
+		};
+		AA0003052C12345600000305 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				AA00010B2C1234560000010B /* AudioWaveformVisualizer.swift */,
+				AA00010C2C1234560000010C /* WaveformTrimmerOverlay.swift */,
+				AA00010D2C1234560000010D /* AudioScrubberBar.swift */,
+				AA00010E2C1234560000010E /* AudioControlButtonsView.swift */,
+				AA0001192C12345600000119 /* AudioLyricsSyncedView.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		AA0003062C12345600000306 /* Screens */ = {
+			isa = PBXGroup;
+			children = (
+				AA00010F2C1234560000010F /* AudioPlayerDetailView.swift */,
+				AA0001102C12345600000110 /* AudioTrimmerSheet.swift */,
+				AA0001112C12345600000111 /* VideoToAudioView.swift */,
+				AA0001122C12345600000112 /* AudioMergerView.swift */,
+				AA0001132C12345600000113 /* AudioEffectsSheet.swift */,
+				AA0001142C12345600000114 /* ExportSettingsSheet.swift */,
+				AA0001152C12345600000115 /* AudioLibraryView.swift */,
+				AA0001162C12345600000116 /* AudioToolsGridView.swift */,
+				AA00011C2C1234560000011C /* LyricSearchSheet.swift */,
+				AA0001202C12345600000120 /* WifiTransferView.swift */,
+			);
+			path = Screens;
+			sourceTree = "<group>";
+		};
+		AA0000302C12345600000030 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				AA0000602C12345600000060 /* Camera */,
+				AA0000612C12345600000061 /* Sensors */,
+				AA0000622C12345600000062 /* Computational */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		AA0000602C12345600000060 /* Camera */ = {
+			isa = PBXGroup;
+			children = (
+				AA0000152C12345600000015 /* CameraManager.swift */,
+				AA0000132C12345600000013 /* CameraParameters.swift */,
+				AA0000482C12345600000048 /* LiveHistogramCalculator.swift */,
+			);
+			path = Camera;
+			sourceTree = "<group>";
+		};
+		AA0000612C12345600000061 /* Sensors */ = {
+			isa = PBXGroup;
+			children = (
+				AA0000422C12345600000042 /* AntiShakeDetector.swift */,
+				AA0000462C12345600000046 /* AudioMeterManager.swift */,
+				AA0000172C12345600000017 /* MotionSensorManager.swift */,
+			);
+			path = Sensors;
+			sourceTree = "<group>";
+		};
+		AA0000622C12345600000062 /* Computational */ = {
+			isa = PBXGroup;
+			children = (
+				AA0000442C12345600000044 /* FrameStackingEngine.swift */,
+			);
+			path = Computational;
+			sourceTree = "<group>";
+		};
+		AA0000312C12345600000031 /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				AA0000632C12345600000063 /* Theme */,
+				AA0000642C12345600000064 /* Views */,
+				AA0000652C12345600000065 /* Components */,
+			);
+			path = UI;
+			sourceTree = "<group>";
+		};
+
+		AA00000E2C1234560000000E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				AA00000F2C1234560000000F /* procam_ios.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		AA0000022C12345600000002 /* procam_ios */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AA0000042C12345600000004 /* Build configuration list for PBXNativeTarget "procam_ios" */;
+			buildPhases = (
+				AA0000092C12345600000009 /* Sources */,
+				AA00000A2C1234560000000A /* Frameworks */,
+				AA00000B2C1234560000000B /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = procam_ios;
+			productName = procam_ios;
+			productReference = AA00000F2C1234560000000F /* procam_ios.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		AA0000012C12345600000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					AA0000022C12345600000002 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+				};
+			};
+			buildConfigurationList = AA0000032C12345600000003 /* Build configuration list for PBXProject "procam_ios" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = AA00000C2C1234560000000C;
+			productRefGroup = AA00000E2C1234560000000E /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				AA0000022C12345600000002 /* procam_ios */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		AA00000B2C1234560000000B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AA0002212C12345600000221 /* web_transfer.html in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		AA0000092C12345600000009 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AA0000112C12345600000011 /* ProCamApp.swift in Sources */,
+
+				AA0002022C12345600000202 /* AudioTrack.swift in Sources */,
+				AA0002032C12345600000203 /* AudioExportConfig.swift in Sources */,
+				AA0002042C12345600000204 /* AudioToolType.swift in Sources */,
+				AA0002052C12345600000205 /* AudioProcessingEngine.swift in Sources */,
+				AA0002062C12345600000206 /* FFmpegCommandBridge.swift in Sources */,
+				AA0002072C12345600000207 /* WaveformExtractor.swift in Sources */,
+				AA0002082C12345600000208 /* AudioPlayerManager.swift in Sources */,
+				AA0002092C12345600000209 /* AudioFileManager.swift in Sources */,
+				AA00020A2C1234560000020A /* AudioEditorTheme.swift in Sources */,
+				AA00020B2C1234560000020B /* AudioWaveformVisualizer.swift in Sources */,
+				AA00020C2C1234560000020C /* WaveformTrimmerOverlay.swift in Sources */,
+				AA00020D2C1234560000020D /* AudioScrubberBar.swift in Sources */,
+				AA00020E2C1234560000020E /* AudioControlButtonsView.swift in Sources */,
+				AA00020F2C1234560000020F /* AudioPlayerDetailView.swift in Sources */,
+				AA0002102C12345600000210 /* AudioTrimmerSheet.swift in Sources */,
+				AA0002112C12345600000211 /* VideoToAudioView.swift in Sources */,
+				AA0002122C12345600000212 /* AudioMergerView.swift in Sources */,
+				AA0002132C12345600000213 /* AudioEffectsSheet.swift in Sources */,
+				AA0002142C12345600000214 /* ExportSettingsSheet.swift in Sources */,
+				AA0002152C12345600000215 /* AudioLibraryView.swift in Sources */,
+				AA0002162C12345600000216 /* AudioToolsGridView.swift in Sources */,
+				AA0002172C12345600000217 /* AudioEditorMainView.swift in Sources */,
+				AA0002182C12345600000218 /* LyricLine.swift in Sources */,
+				AA0002192C12345600000219 /* AudioLyricsSyncedView.swift in Sources */,
+				AA00021A2C1234560000021A /* LyricSearchService.swift in Sources */,
+				AA00021B2C1234560000021B /* SpeechRecognitionService.swift in Sources */,
+				AA00021C2C1234560000021C /* LyricSearchSheet.swift in Sources */,
+				AA00021D2C1234560000021D /* OfflineLyricsStore.swift in Sources */,
+				AA00021E2C1234560000021E /* WifiHttpServer.swift in Sources */,
+				AA00021F2C1234560000021F /* WifiTransferManager.swift in Sources */,
+				AA0002202C12345600000220 /* WifiTransferView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		AA0000052C12345600000005 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		AA0000062C12345600000006 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_OPTIMIZATION_LEVEL = s;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		AA0000072C12345600000007 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = procam_ios/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = ProCam;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sondeptrai.procam;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		AA0000082C12345600000008 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = procam_ios/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = ProCam;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sondeptrai.procam;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		AA0000032C12345600000003 /* Build configuration list for PBXProject "procam_ios" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AA0000052C12345600000005 /* Debug */,
+				AA0000062C12345600000006 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AA0000042C12345600000004 /* Build configuration list for PBXNativeTarget "procam_ios" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AA0000072C12345600000007 /* Debug */,
+				AA0000082C12345600000008 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+	};
+	rootObject = AA0000012C12345600000001 /* Project object */;
+}

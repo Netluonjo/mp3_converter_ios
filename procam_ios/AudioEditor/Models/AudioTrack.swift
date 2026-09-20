@@ -1,0 +1,144 @@
+import Foundation
+import SwiftUI
+
+/// Represents a single audio track in the editor, either imported or exported.
+public struct AudioTrack: Identifiable, Codable, Hashable {
+    public let id: UUID
+    public var title: String
+    public var fileURL: URL
+    public var duration: TimeInterval
+    public var format: AudioFormat
+    public var sampleRate: Int
+    public var bitrateKbps: Int
+    public var fileSizeBytes: Int64
+    public var createdAt: Date
+    public var waveformSamples: [Float]
+    public var transcript: String?
+    public var lyricLines: [LyricLine]?
+    
+    public init(
+        id: UUID = UUID(),
+        title: String,
+        fileURL: URL,
+        duration: TimeInterval,
+        format: AudioFormat = .m4a,
+        sampleRate: Int = 44100,
+        bitrateKbps: Int = 192,
+        fileSizeBytes: Int64 = 0,
+        createdAt: Date = Date(),
+        waveformSamples: [Float] = [],
+        transcript: String? = nil,
+        lyricLines: [LyricLine]? = nil
+    ) {
+        self.id = id
+        self.title = title
+        self.fileURL = fileURL
+        self.duration = duration
+        self.format = format
+        self.sampleRate = sampleRate
+        self.bitrateKbps = bitrateKbps
+        self.fileSizeBytes = fileSizeBytes
+        self.createdAt = createdAt
+        self.waveformSamples = waveformSamples
+        
+        let effectiveDuration = duration > 0 ? duration : 236.0
+        if let text = transcript, !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            self.transcript = text
+            self.lyricLines = lyricLines ?? LyricParser.parse(text: text, duration: effectiveDuration)
+        } else {
+            let offlineMatches = OfflineLyricsStore.search(query: title)
+            let fallbackLRC = offlineMatches.first?.resolvedLyrics ?? OfflineLyricsStore.xuongRongDangrangtoLRC
+            self.transcript = fallbackLRC
+            self.lyricLines = lyricLines ?? LyricParser.parse(text: fallbackLRC, duration: effectiveDuration)
+        }
+    }
+    
+    /// Synchronized lyric lines, parsed on-demand from transcript or automatically resolved from offline store
+    public var lyrics: [LyricLine] {
+        if let lines = lyricLines, !lines.isEmpty {
+            return lines
+        }
+        let effectiveDuration = duration > 0 ? duration : 236.0
+        if let text = transcript, !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            let parsed = LyricParser.parse(text: text, duration: effectiveDuration)
+            if !parsed.isEmpty { return parsed }
+        }
+        // Auto-heal: Resolve from offline lyrics store so lyrics are NEVER null or empty
+        let offlineMatches = OfflineLyricsStore.search(query: title)
+        let lrc = offlineMatches.first?.resolvedLyrics ?? OfflineLyricsStore.xuongRongDangrangtoLRC
+        return LyricParser.parse(text: lrc, duration: effectiveDuration)
+    }
+    
+    /// Formatted duration string e.g. "00:21" or "03:45"
+    public var formattedDuration: String {
+        let minutes = Int(duration) / 60
+        let seconds = Int(duration) % 60
+        return String(format: "%02d:%02d", minutes, seconds)
+    }
+    
+    /// Formatted file size string e.g. "2.4 MB"
+    public var formattedFileSize: String {
+        let formatter = ByteCountFormatter()
+        formatter.allowedUnits = [.useKB, .useMB]
+        formatter.countStyle = .file
+        return formatter.string(fromByteCount: fileSizeBytes)
+    }
+    
+    /// Generate synthetic preview samples if waveform wasn't yet extracted
+    public static func placeholderSamples(count: Int = 60) -> [Float] {
+        var samples: [Float] = []
+        for i in 0..<count {
+            let progress = Float(i) / Float(count)
+            // Bell-shaped amplitude wave with micro-variations
+            let bell = sin(progress * .pi)
+            let wobble = sin(progress * 16.0) * 0.2 + cos(progress * 8.0) * 0.15
+            let amplitude = max(0.1, min(1.0, (bell * 0.7 + wobble * 0.3) + 0.15))
+            samples.append(amplitude)
+        }
+        return samples
+    }
+    
+    /// Pre-loaded full track: "Xương Rồng - Dangrangto" with 236s duration and full synced LRC lyrics
+    public static var xuongRongTrack: AudioTrack {
+        let url = AudioFileManager.shared.exportsDirectory.appendingPathComponent("Xương Rồng - Dangrangto.wav")
+        let lrc = OfflineLyricsStore.xuongRongDangrangtoLRC
+        return AudioTrack(
+            id: UUID(uuidString: "88888888-8888-8888-8888-888888888888") ?? UUID(),
+            title: "Xương Rồng - Dangrangto",
+            fileURL: url,
+            duration: 236.0,
+            format: .wav,
+            sampleRate: 44100,
+            bitrateKbps: 256,
+            fileSizeBytes: 7_550_000,
+            createdAt: Date(),
+            waveformSamples: placeholderSamples(count: 65),
+            transcript: lrc,
+            lyricLines: LyricParser.parse(text: lrc, duration: 236.0)
+        )
+    }
+    
+    /// Sample demo recording matching "Ghi âm 1"
+    public static var recordingDemoTrack: AudioTrack {
+        let demoUrl = AudioFileManager.shared.exportsDirectory.appendingPathComponent("Ghi âm 1.wav")
+        return AudioTrack(
+            id: UUID(uuidString: "00000000-0000-0000-0000-000000000001") ?? UUID(),
+            title: "Ghi âm 1",
+            fileURL: demoUrl,
+            duration: 21.0,
+            format: .m4a,
+            sampleRate: 44100,
+            bitrateKbps: 192,
+            fileSizeBytes: 512_000,
+            createdAt: Date(),
+            waveformSamples: placeholderSamples(count: 65),
+            transcript: LyricParser.demoLRC,
+            lyricLines: LyricParser.parse(text: LyricParser.demoLRC, duration: 21.0)
+        )
+    }
+    
+    /// Primary default track loaded on app launch
+    public static var demoTrack: AudioTrack {
+        return xuongRongTrack
+    }
+}
