@@ -79,7 +79,7 @@
 		AA00011E2C1234560000011E /* WifiHttpServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WifiHttpServer.swift; sourceTree = "<group>"; };
 		AA00011F2C1234560000011F /* WifiTransferManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WifiTransferManager.swift; sourceTree = "<group>"; };
 		AA0001202C12345600000120 /* WifiTransferView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WifiTransferView.swift; sourceTree = "<group>"; };
-		AA0001212C12345600000121 /* web_transfer.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = web_transfer.html; sourceTree = "<group>"; };
+		AA0001212C12345600000121 /* web_transfer.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = Resources/web_transfer.html; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
